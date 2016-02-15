@@ -11,5 +11,6 @@ Il y a cependant quelques règles à suivre !
  * Respectez également la structure et surtout l'architecture globale de l'application. Documentez vous et lisez le code actuel avant de commencer le développement afin de voir la bonne direction à prendre (surtout ne pas partir tête baissée)
  * Ajoutez systématiquement votre nom dans la partie `Contributors` de l'en-tête du fichier que vous modifiez
  * Lorsque vous modifiez le code de quelqu'un ou que vous faites une refonte de fonctionnalités largement utilisées, il peut être pertinent de prévenir les personnes concernées dans la PR
+ * Pas de modifications qui augmentent la version de l'API minimale d'Android requise
  
  Enfin, sachez que l'on vous demandera peut-être d'ajuster votre code avant d'accepter la PR concernée.
