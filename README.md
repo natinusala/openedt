@@ -22,7 +22,7 @@ Si vous voulez ajouter votre université ou composante, veuillez vous référer 
 Tout est automatisé grâce à Gradle et surtout grâce à Android Studio... vous n'avez qu'à faire "Checkout from VCS" en entrant l'adresse de ce repo !
 
 ## Contribuer au projet
-Allez sur [ce fichier](CONTRUBITING.md).
+Tout est dans [ce fichier](CONTRUBITING.md).
 
 ## Licence
 
