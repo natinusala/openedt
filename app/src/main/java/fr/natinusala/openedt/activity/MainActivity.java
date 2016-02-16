@@ -149,7 +149,6 @@ public class MainActivity extends ActionBarActivity
 
     public void onResume(){
         super.onResume();
-        Log.v("debug", "on resume");
         refresh();
     }
 
@@ -157,7 +156,6 @@ public class MainActivity extends ActionBarActivity
         SharedPreferences pref = getSharedPreferences(SCRAPPER_SAVE, 0);
         String grpName = pref.getString("groupName", "Inconnu");
         setTitle(TITLE  + grpName);
-        Log.v("debug", TITLE + grpName);
         ProgressView pv = (ProgressView) findViewById(R.id.progress_circle);
         pv.setVisibility(View.VISIBLE);
         new Task(true).execute();
@@ -184,6 +182,7 @@ public class MainActivity extends ActionBarActivity
             catch (Exception ex)
             {
                 ex.printStackTrace();
+                //TODO Afficher une erreur
             }
 
             return null;
@@ -227,6 +226,7 @@ public class MainActivity extends ActionBarActivity
                 weeksList.addView(new WeekView(instance, scrapper.semaines.get(week + 1)));
             } catch (Exception ex) {
                 ex.printStackTrace();
+                //TODO Afficher une erreur
             }
 
         }

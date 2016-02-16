@@ -32,16 +32,12 @@ import fr.natinusala.openedt.scrapping.CelcatEventScrapper;
  */
 public class SaveManager {
 
-    public static final String SCRAPPER_SAVE = "SmarterEDTData";
-
     private MainActivity activity;
-    private File hourFile;
-    private File scrapperFile;
     private SharedPreferences pref;
 
     public SaveManager(MainActivity mainActivity){
         this.activity = mainActivity;
-        pref = mainActivity.getSharedPreferences(SCRAPPER_SAVE, 0);
+        pref = mainActivity.getSharedPreferences(MainActivity.SCRAPPER_SAVE, 0);
     }
 
     public boolean isScrapperSaved()
@@ -74,22 +70,19 @@ public class SaveManager {
         prefEditor.commit();
     }
 
-    public CelcatEventScrapper getEventScrapper(){
+    public CelcatEventScrapper getEventScrapper() throws IOException {
         SharedPreferences.Editor prefEditor = pref.edit();
         CelcatEventScrapper eventScrapper = null;
         Calendar cal = Calendar.getInstance();
         int hourNow = cal.get(Calendar.HOUR_OF_DAY);
         int hourLastSave = readHour();
-        if((hourLastSave == -1) || (hourNow - hourLastSave > 1)){
-            try {
-                eventScrapper = new CelcatEventScrapper(pref.getString("groupUrl", ""));
-                saveHour(hourNow);
-                saveScrapper(eventScrapper);
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-
-        }else{
+        if((hourLastSave == -1) || (hourNow - hourLastSave > 1))
+        {
+            eventScrapper = new CelcatEventScrapper(pref.getString("groupUrl", ""));
+            saveHour(hourNow);
+            saveScrapper(eventScrapper);
+        }
+        else{
             eventScrapper = readScrapper();
         }
         return eventScrapper;

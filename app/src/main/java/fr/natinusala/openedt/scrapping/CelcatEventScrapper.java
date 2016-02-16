@@ -16,6 +16,8 @@
 
 package fr.natinusala.openedt.scrapping;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.jsoup.Jsoup;
@@ -42,7 +44,7 @@ public class CelcatEventScrapper
 	public ArrayList<Periode> periodes = new ArrayList<Periode>();
 	
 	public CelcatEventScrapper(String url) throws IOException
-	{     
+	{
 		Document doc = Jsoup.connect(url).get();
 		
 		//Périodes		

@@ -33,29 +33,25 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import fr.natinusala.openedt.activity.MainActivity;
+
 
 /**
  * Created by Maveist on 12/02/2016.
  */
 public class GroupManager{
 
-    public static final String SCRAPPER_SAVE = "SmarterEDTData";
-
     private Activity AddGroupActivity;
     private Map<String, String> groupUrl;
     private String URLIndex;
     private String URLBranch;
 
-    public GroupManager(Activity addGroup, String index){
+    public GroupManager(Activity addGroup, String index) throws IOException {
         this.AddGroupActivity = addGroup;
         this.groupUrl = new HashMap<String,String>();
         this.URLIndex = index;
         this.URLBranch = index.replace("gindex.html", "");
-        try{
-            this.fillGroupUrl();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+        this.fillGroupUrl();
     }
 
     protected void fillGroupUrl() throws IOException{
@@ -78,7 +74,7 @@ public class GroupManager{
 
     public void setGroup(String groupSelected){
         String urlSelected = this.groupUrl.get(groupSelected);
-        SharedPreferences pref = AddGroupActivity.getSharedPreferences(SCRAPPER_SAVE, 0);
+        SharedPreferences pref = AddGroupActivity.getSharedPreferences(MainActivity.SCRAPPER_SAVE, 0);
         SharedPreferences.Editor prefEditor = pref.edit();
         prefEditor.putString("groupUrl", urlSelected);
         prefEditor.putString("groupName", groupSelected);
