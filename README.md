@@ -1,4 +1,4 @@
-# ![](https://raw.githubusercontent.com/natinusala/openedt/master/app/src/main/res/mipmap-mdpi/ic_launcher.png) OpenEDT
+# ![](https://raw.githubusercontent.com/natinusala/openedt/master/app/src/main/res/mipmap-xhdpi/ic_launcher.png) OpenEDT
 
 Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une application android libre permettant la consultation d'emploi du temps à partir de leur smartphone, qui serait une alternative à une application déjà existante dont le code n'est pas à disposition de ses utilisateurs. 
  
