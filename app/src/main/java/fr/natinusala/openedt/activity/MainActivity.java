@@ -47,8 +47,8 @@ import fr.natinusala.openedt.views.WeekView;
 
 public class MainActivity extends ActionBarActivity
 {
-    public static final String SCRAPPER_SAVE = "SmarterEDTData";
-    public static final String TITLE = "SmarterEDT - ";
+    public static final String SCRAPPER_SAVE = "OpenEDTData";
+    public static final String TITLE = "OpenEDT - ";
     private static final UUID WATCHAPP_UUID = UUID.fromString("00f5db3f-43da-4229-9368-14aa35422398");
     CelcatEventScrapper scrapper;
     MainActivity instance = this;
