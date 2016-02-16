@@ -18,10 +18,6 @@ package fr.natinusala.openedt.manager;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.util.Log;
-
-import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,10 +31,6 @@ import java.util.Map;
 
 import fr.natinusala.openedt.activity.MainActivity;
 
-
-/**
- * Created by Maveist on 12/02/2016.
- */
 public class GroupManager{
 
     private Activity AddGroupActivity;
@@ -48,7 +40,7 @@ public class GroupManager{
 
     public GroupManager(Activity addGroup, String index) throws IOException {
         this.AddGroupActivity = addGroup;
-        this.groupUrl = new HashMap<String,String>();
+        this.groupUrl = new HashMap<>();
         this.URLIndex = index;
         this.URLBranch = index.replace("gindex.html", "");
         this.fillGroupUrl();
@@ -67,7 +59,7 @@ public class GroupManager{
     }
 
     public ArrayList<String> getKeys(){
-        ArrayList<String> list =  new ArrayList<String>(this.groupUrl.keySet());
+        ArrayList<String> list = new ArrayList<>(this.groupUrl.keySet());
         Collections.sort(list);
         return list;
     }
@@ -78,7 +70,7 @@ public class GroupManager{
         SharedPreferences.Editor prefEditor = pref.edit();
         prefEditor.putString("groupUrl", urlSelected);
         prefEditor.putString("groupName", groupSelected);
-        prefEditor.commit();
+        prefEditor.apply();
     }
 
 }

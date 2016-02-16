@@ -36,10 +36,10 @@ public class Event
 	
 	public String category = "";
 	
-	public ArrayList<String> room = new ArrayList<String>();
-	public ArrayList<String> module = new ArrayList<String>();
-	public ArrayList<String> staff = new ArrayList<String>();
-	public ArrayList<String> group = new ArrayList<String>();
+	public ArrayList<String> room = new ArrayList<>();
+	public ArrayList<String> module = new ArrayList<>();
+	public ArrayList<String> staff = new ArrayList<>();
+	public ArrayList<String> group = new ArrayList<>();
 	
 	public String colour = "#FFFFCC";
 	
@@ -62,11 +62,11 @@ public class Event
 		{
 			return "Inconnu";
 		}
-		else if (module.isEmpty() && !category.isEmpty())
+		else if (!category.isEmpty() && module.isEmpty())
 		{
 			return category + " inconnu(e)";
 		}
-		else if (!module.isEmpty() && category.isEmpty())
+		else if (category.isEmpty())
 		{
 			return getPrettyStringFromList(module);
 		}

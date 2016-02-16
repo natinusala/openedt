@@ -21,7 +21,7 @@ public enum Component
     IUT_NANTES("IUT Nantes", "https://edt.univ-nantes.fr/iut_nantes/gindex.html"),
     MEDECINE("Médecine, Pharmacie", "https://edt.univ-nantes.fr/medecine/gindex.html");
 
-    private Component(String name, String groups_url)
+    Component(String name, String groups_url)
     {
         this.name = name;
         this.groups_url = groups_url;

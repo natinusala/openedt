@@ -30,7 +30,7 @@ public class Week
 
 	public int maximumEndTimeUnits = 0;
 	
-	public ArrayList<Event> events = new ArrayList<Event>();
+	public ArrayList<Event> events = new ArrayList<>();
 	
 	public Week(int num)
 	{
@@ -46,13 +46,10 @@ public class Week
 
 	//Attention décalage d'au moins une heure dans les times units des modules
 	public ArrayList<String> getNextModulePebble(boolean isWeekEnd){
-		Calendar calNow = Calendar.getInstance();
 		int today = getNumberOfDay(Calendar.DAY_OF_WEEK);
 		// le -1 sur calNow.HOUR_OF_DAY est pour prévenir le décalage.
-		int nowHourMinutes = TimeUtils.convertFormattedTimeToUnits(calNow.HOUR_OF_DAY - 1, calNow.MINUTE);
-		ArrayList<Event> eventToday = new ArrayList<Event>();
-		ArrayList<String> strToSend = new ArrayList<String>();
-		boolean haveEventToday = false;
+		int nowHourMinutes = TimeUtils.convertFormattedTimeToUnits(Calendar.HOUR_OF_DAY - 1, Calendar.MINUTE);
+		ArrayList<String> strToSend = new ArrayList<>();
 
 		Iterator<Event> e = events.iterator();
 		if(isWeekEnd){

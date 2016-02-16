@@ -16,20 +16,20 @@
 
 package fr.natinusala.openedt.activity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.content.Context;
 
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -40,12 +40,12 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import fr.natinusala.openedt.R;
-import fr.natinusala.openedt.manager.SaveManager;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.manager.SaveManager;
 import fr.natinusala.openedt.scrapping.CelcatEventScrapper;
 import fr.natinusala.openedt.views.WeekView;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends AppCompatActivity
 {
     public static final String SCRAPPER_SAVE = "OpenEDTData";
     public static final String TITLE = "OpenEDT - ";
@@ -54,8 +54,8 @@ public class MainActivity extends ActionBarActivity
     MainActivity instance = this;
     LinearLayout testWeek;
     SaveManager  saveManager ;
+    PebbleKit.PebbleDataReceiver receiver;
 
-    int cptTest = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -72,8 +72,9 @@ public class MainActivity extends ActionBarActivity
         new Task(false).execute();
 
         //Pebble compatibility
-        PebbleKit.registerReceivedDataHandler(this, new PebbleKit.PebbleDataReceiver(WATCHAPP_UUID) {
+        receiver = new PebbleKit.PebbleDataReceiver(WATCHAPP_UUID) {
 
+            @SuppressLint("SetTextI18n")
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
                 Button btn = new Button(getApplicationContext());
                 btn.setText("Just received a message! " /*+ Long.toString((data.getInteger(1)))*/);
@@ -84,7 +85,7 @@ public class MainActivity extends ActionBarActivity
 
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                 alertDialog.setTitle("Alert");
-                alertDialog.setMessage(dataToSend.get(0)+"\n\n"+dataToSend.get(1)+"\n\n"+dataToSend.get(2));
+                alertDialog.setMessage(dataToSend.get(0) + "\n\n" + dataToSend.get(1) + "\n\n" + dataToSend.get(2));
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -100,28 +101,17 @@ public class MainActivity extends ActionBarActivity
                 msg.addString(256, dataToSend.get(2));
                 PebbleKit.sendDataToPebble(getApplicationContext(), WATCHAPP_UUID, msg);
             }
-        });
+        };
+        PebbleKit.registerReceivedDataHandler(this, receiver);
 
 
     }
 
-    public void getCours(){
-        String str = "";
-        ArrayList<String> dataToSend = scrapper.getNextModulePebble();
-        for(String s : dataToSend){
-            str += "\n\n" + s;
-        }
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-        alertDialog.setTitle("Alert");
-        alertDialog.setMessage(str);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -147,6 +137,7 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
     public void onResume(){
         super.onResume();
         refresh();
@@ -155,7 +146,7 @@ public class MainActivity extends ActionBarActivity
     public void refresh(){
         SharedPreferences pref = getSharedPreferences(SCRAPPER_SAVE, 0);
         String grpName = pref.getString("groupName", "Inconnu");
-        setTitle(TITLE  + grpName);
+        setTitle(TITLE + grpName);
         ProgressView pv = (ProgressView) findViewById(R.id.progress_circle);
         pv.setVisibility(View.VISIBLE);
         new Task(true).execute();
@@ -232,19 +223,5 @@ public class MainActivity extends ActionBarActivity
         }
 
 
-    }
-    public void displayMessageDebug(String str) {
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-        alertDialog.setTitle("Alert");
-        alertDialog.setMessage(str);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-       /* Toast.makeText(getApplicationContext(), str,
-                Toast.LENGTH_SHORT).show();*/
     }
 }

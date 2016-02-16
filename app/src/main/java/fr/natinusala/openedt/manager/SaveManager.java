@@ -20,23 +20,16 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
 import fr.natinusala.openedt.activity.MainActivity;
 import fr.natinusala.openedt.scrapping.CelcatEventScrapper;
 
-/**
- * Created by Maveist on 05/02/2016.
- */
 public class SaveManager {
-
-    private MainActivity activity;
     private SharedPreferences pref;
 
     public SaveManager(MainActivity mainActivity){
-        this.activity = mainActivity;
         pref = mainActivity.getSharedPreferences(MainActivity.SCRAPPER_SAVE, 0);
     }
 
@@ -52,14 +45,13 @@ public class SaveManager {
     public CelcatEventScrapper readScrapper(){
         Gson gson = new Gson();
         String json = pref.getString("scrapper", "");
-        CelcatEventScrapper scrap = gson.fromJson(json, CelcatEventScrapper.class);
-        return scrap;
+        return gson.fromJson(json, CelcatEventScrapper.class);
     }
 
     public void saveHour(int hour){
         SharedPreferences.Editor prefEditor = pref.edit();
         prefEditor.putInt("hour", hour);
-        prefEditor.commit();
+        prefEditor.apply();
     }
 
     public void saveScrapper(CelcatEventScrapper scrapper){
@@ -67,15 +59,14 @@ public class SaveManager {
         Gson gson = new Gson();
         String json = gson.toJson(scrapper);
         prefEditor.putString("scrapper", json);
-        prefEditor.commit();
+        prefEditor.apply();
     }
 
     public CelcatEventScrapper getEventScrapper() throws IOException {
-        SharedPreferences.Editor prefEditor = pref.edit();
-        CelcatEventScrapper eventScrapper = null;
         Calendar cal = Calendar.getInstance();
         int hourNow = cal.get(Calendar.HOUR_OF_DAY);
         int hourLastSave = readHour();
+        CelcatEventScrapper eventScrapper;
         if((hourLastSave == -1) || (hourNow - hourLastSave > 1))
         {
             eventScrapper = new CelcatEventScrapper(pref.getString("groupUrl", ""));

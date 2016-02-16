@@ -16,6 +16,7 @@
 
 package fr.natinusala.openedt.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -44,9 +45,7 @@ import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.utils.TimeUtils;
 import fr.natinusala.openedt.utils.UIUtils;
 
-/**
- * Created by Natinusala on 19/09/2015.
- */
+@SuppressLint("ViewConstructor")
 public class WeekView extends CardView
 {
     private Week week;
@@ -54,7 +53,7 @@ public class WeekView extends CardView
 
     Context context;
 
-    ArrayList<RelativeLayout> daysLayouts = new ArrayList<RelativeLayout>();
+    ArrayList<RelativeLayout> daysLayouts = new ArrayList<>();
 
     int dp(int value)
     {
@@ -123,6 +122,7 @@ public class WeekView extends CardView
 
     class EventDialog extends AlertDialog
     {
+        @SuppressLint("SetTextI18n")
         public EventDialog(Context context, Event event)
         {
             super(context);
@@ -211,8 +211,6 @@ public class WeekView extends CardView
         {
             super(c);
             this.event = e;
-            final EventFrame instance = this;
-
             this.setGravity(Gravity.CENTER);
 
             this.setBackgroundColor(UIUtils.hexstringToColor(e.colour));
@@ -237,6 +235,7 @@ public class WeekView extends CardView
 
     class DayFrame extends LinearLayout
     {
+        @SuppressLint("SetTextI18n")
         public DayFrame(Context c, Date day)
         {
             super(c);

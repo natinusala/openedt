@@ -16,8 +16,6 @@
 
 package fr.natinusala.openedt.scrapping;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 
 import org.jsoup.Jsoup;
@@ -38,10 +36,10 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class CelcatEventScrapper
 {
 	@SerializedName("semaines")
-	public ArrayList<Week> semaines = new ArrayList<Week>();
+	public ArrayList<Week> semaines = new ArrayList<>();
 
 	@SerializedName("periodes")
-	public ArrayList<Periode> periodes = new ArrayList<Periode>();
+	public ArrayList<Periode> periodes = new ArrayList<>();
 	
 	public CelcatEventScrapper(String url) throws IOException
 	{
@@ -146,8 +144,8 @@ public class CelcatEventScrapper
 		boolean weekend = false;
 		Calendar cal = Calendar.getInstance();
 		Iterator<Week> week = semaines.iterator();
-		int weekID = Week.getIdWeek(cal.WEEK_OF_YEAR) + 3;
-		if(cal.DAY_OF_WEEK == 6 || cal.DAY_OF_WEEK == 1) { weekend = true; }
+		int weekID = Week.getIdWeek(Calendar.WEEK_OF_YEAR) + 3;
+		if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) { weekend = true; }
 		Week w = null;
 		if(!weekend) {
 			while (week.hasNext() && !found) {
@@ -164,7 +162,7 @@ public class CelcatEventScrapper
 				}
 			}
 		}
-		ArrayList<String> currentModuleList = w.getNextModulePebble(weekend);
+		ArrayList<String> currentModuleList = w != null ? w.getNextModulePebble(weekend) : new ArrayList<String>();
 		while(currentModuleList.size() < 3){
 			currentModuleList.addAll(week.next().getNextModulePebble(true));
 		}

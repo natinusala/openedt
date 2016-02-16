@@ -18,7 +18,7 @@ package fr.natinusala.openedt.activity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +33,8 @@ import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.manager.GroupManager;
 
-public class AddGroupActivity extends ActionBarActivity {
+
+public class AddGroupActivity extends AppCompatActivity {
 
     private GroupManager groupManager;
     private AddGroupActivity instance = this;
@@ -43,14 +44,14 @@ public class AddGroupActivity extends ActionBarActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
-        ArrayList<String> spinnerArray = new ArrayList<String>();
+        ArrayList<String> spinnerArray = new ArrayList<>();
         for (Component c : Component.values())
         {
             spinnerArray.add(c.name);
         }
 
         android.widget.Spinner spinner = (android.widget.Spinner) findViewById(R.id.component_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -81,11 +82,6 @@ public class AddGroupActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -108,7 +104,7 @@ public class AddGroupActivity extends ActionBarActivity {
         submit.setVisibility(View.VISIBLE);
         final android.widget.Spinner spinnerGroup = (android.widget.Spinner) findViewById(R.id.group_spinner);
         ArrayList<String> groups = groupManager.getKeys();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, groups);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, groups);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerGroup.setAdapter(adapter);
         submit.setOnClickListener(new View.OnClickListener() {
