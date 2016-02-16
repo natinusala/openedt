@@ -18,3 +18,9 @@ cache:
     - $HOME/.gradle/wrapper/
     
 script: ./gradlew build check
+
+deploy:
+  provider: bintray
+  file: "bintray.json"
+  user: "natinusala"
+  key: "9b982b2b9a0873db105702cb6f8f394636f45ac5"
