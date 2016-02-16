@@ -61,50 +61,51 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         saveManager = new SaveManager(this);
+        setContentView(R.layout.activity_main);
 
         if (!saveManager.isScrapperSaved())
         {
             Intent intent = new Intent(this, AddGroupActivity.class);
             this.startActivity(intent);
+            finish(); //pour terminer l'activité
         }
+        else
+        {
+            new Task(false).execute();
 
-        setContentView(R.layout.activity_main);
-        new Task(false).execute();
+            //Pebble compatibility
+            receiver = new PebbleKit.PebbleDataReceiver(WATCHAPP_UUID) {
 
-        //Pebble compatibility
-        receiver = new PebbleKit.PebbleDataReceiver(WATCHAPP_UUID) {
+                @SuppressLint("SetTextI18n")
+                public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
+                    Button btn = new Button(getApplicationContext());
+                    btn.setText("Just received a message! " /*+ Long.toString((data.getInteger(1)))*/);
+                    testWeek.addView(btn);
+                    PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
 
-            @SuppressLint("SetTextI18n")
-            public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-                Button btn = new Button(getApplicationContext());
-                btn.setText("Just received a message! " /*+ Long.toString((data.getInteger(1)))*/);
-                testWeek.addView(btn);
-                PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
+                    ArrayList<String> dataToSend = scrapper.getNextModulePebble();
 
-                ArrayList<String> dataToSend = scrapper.getNextModulePebble();
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    alertDialog.setTitle("Alert");
+                    alertDialog.setMessage(dataToSend.get(0) + "\n\n" + dataToSend.get(1) + "\n\n" + dataToSend.get(2));
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
 
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage(dataToSend.get(0) + "\n\n" + dataToSend.get(1) + "\n\n" + dataToSend.get(2));
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
+                    PebbleDictionary msg = new PebbleDictionary();
 
-                PebbleDictionary msg = new PebbleDictionary();
-
-                msg.addString(0, dataToSend.get(0));
-                msg.addString(128, dataToSend.get(1));
-                msg.addString(256, dataToSend.get(2));
-                PebbleKit.sendDataToPebble(getApplicationContext(), WATCHAPP_UUID, msg);
-            }
-        };
-        PebbleKit.registerReceivedDataHandler(this, receiver);
-
-
+                    msg.addString(0, dataToSend.get(0));
+                    msg.addString(128, dataToSend.get(1));
+                    msg.addString(256, dataToSend.get(2));
+                    PebbleKit.sendDataToPebble(getApplicationContext(), WATCHAPP_UUID, msg);
+                }
+            };
+            PebbleKit.registerReceivedDataHandler(this, receiver);
+        }
     }
 
     @Override
