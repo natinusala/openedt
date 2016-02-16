@@ -16,6 +16,7 @@
 
 package fr.natinusala.openedt.activity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,8 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.manager.GroupManager;
@@ -39,11 +42,20 @@ public class AddGroupActivity extends AppCompatActivity {
     private GroupManager groupManager;
     private AddGroupActivity instance = this;
 
+    android.widget.Spinner spinnerGroup;
+    Button submit;
+
+    //TODO Passer les éléments de l'UI en attributs
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
+
+        submit = (Button) findViewById(R.id.save_group);
+        spinnerGroup = (android.widget.Spinner) findViewById(R.id.group_spinner);
+
         ArrayList<String> spinnerArray = new ArrayList<>();
         for (Component c : Component.values())
         {
@@ -57,6 +69,9 @@ public class AddGroupActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                CardView cardView = (CardView) findViewById(R.id.branchCardView);
+                cardView.setVisibility(View.INVISIBLE);
+                submit.setVisibility(View.INVISIBLE);
                 String urlSelected = getURLSelected(parent.getSelectedItem().toString());
                 callTask(urlSelected);
             }
@@ -65,6 +80,16 @@ public class AddGroupActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 String urlSelected = getURLSelected(parent.getSelectedItem().toString());
                 callTask(urlSelected);
+            }
+        });
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                groupManager.setGroup(spinnerGroup.getSelectedItem().toString());
+                Intent intent = new Intent(instance, MainActivity.class);
+                instance.startActivity(intent);
+                finish();
             }
         });
     }
@@ -100,32 +125,36 @@ public class AddGroupActivity extends AppCompatActivity {
         //Show group cards and submit button
         CardView cardView = (CardView) findViewById(R.id.branchCardView);
         cardView.setVisibility(View.VISIBLE);
-        Button submit = (Button) findViewById(R.id.save_group);
         submit.setVisibility(View.VISIBLE);
-        final android.widget.Spinner spinnerGroup = (android.widget.Spinner) findViewById(R.id.group_spinner);
         ArrayList<String> groups = groupManager.getKeys();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, groups);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerGroup.setAdapter(adapter);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                groupManager.setGroup(spinnerGroup.getSelectedItem().toString());
-                finish();
-            }
-        });
     }
 
-
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Crouton.cancelAllCroutons();
+    }
 
     private class Task extends AsyncTask<String, Void, Void> {
 
+        boolean succeed;
         @Override
         protected Void doInBackground(String... url) {
             try {
                 groupManager = new GroupManager(instance, url[0]);
-            } catch (Exception ex) {
+                succeed = true;
+            } catch (final Exception ex) {
                 ex.printStackTrace();
+                instance.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Crouton.makeText(instance, "Impossible de récupérer les données : " + ex.getLocalizedMessage(), new Style.Builder(Style.ALERT).build()).show();
+                    }
+                });
             }
 
             return null;
@@ -133,6 +162,10 @@ public class AddGroupActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+            if (!succeed)
+            {
+                return;
+            }
             fillGroupSpinner();
         }
 

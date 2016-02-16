@@ -39,8 +39,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.manager.GroupManager;
 import fr.natinusala.openedt.manager.SaveManager;
 import fr.natinusala.openedt.scrapping.CelcatEventScrapper;
 import fr.natinusala.openedt.views.WeekView;
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         saveManager = new SaveManager(this);
         setContentView(R.layout.activity_main);
 
-        if (!saveManager.isScrapperSaved())
+        if (!GroupManager.hasSelectedGroup(this))
         {
             Intent intent = new Intent(this, AddGroupActivity.class);
             this.startActivity(intent);
@@ -71,7 +74,9 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-            new Task(false).execute();
+            //TODO Check si on a les données en mémoire ou pas
+
+            refresh();
 
             //Pebble compatibility
             receiver = new PebbleKit.PebbleDataReceiver(WATCHAPP_UUID) {
@@ -109,10 +114,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Crouton.cancelAllCroutons();
+    }
+
+    @Override
     public void onPause()
     {
         super.onPause();
-        unregisterReceiver(receiver);
     }
 
     @Override
@@ -171,10 +182,15 @@ public class MainActivity extends AppCompatActivity
                     scrapper = saveManager.refresh();
                 }
             }
-            catch (Exception ex)
+            catch (final Exception ex)
             {
                 ex.printStackTrace();
-                //TODO Afficher une erreur
+                instance.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Crouton.makeText(instance, "Impossible de récupérer les données : " + ex.getLocalizedMessage(), new Style.Builder(Style.ALERT).build()).show();
+                    }
+                });
             }
 
             return null;
@@ -183,8 +199,6 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Void result) {
             try {
-                ProgressView pv = (ProgressView) findViewById(R.id.progress_circle);
-                pv.setVisibility(View.GONE);
                 Calendar cal = Calendar.getInstance();
                 int weekCal = cal.get(Calendar.WEEK_OF_YEAR) + 1;
                 int week = Week.getIdWeek(weekCal);
@@ -216,9 +230,17 @@ public class MainActivity extends AppCompatActivity
                 weeksList.addView(new WeekView(instance, scrapper.semaines.get(week - 1)));
                 weeksList.addView(new WeekView(instance, scrapper.semaines.get(week)));
                 weeksList.addView(new WeekView(instance, scrapper.semaines.get(week + 1)));
-            } catch (Exception ex) {
+
+                ProgressView pv = (ProgressView) findViewById(R.id.progress_circle);
+                pv.setVisibility(View.GONE);
+            } catch (final Exception ex) {
                 ex.printStackTrace();
-                //TODO Afficher une erreur
+                instance.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Crouton.makeText(instance, "Impossible d'afficher les données : " + ex.getLocalizedMessage(), new Style.Builder(Style.ALERT).build()).show();
+                    }
+                });
             }
 
         }

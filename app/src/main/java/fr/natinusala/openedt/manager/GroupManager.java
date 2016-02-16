@@ -17,6 +17,7 @@
 package fr.natinusala.openedt.manager;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.jsoup.Jsoup;
@@ -33,20 +34,23 @@ import fr.natinusala.openedt.activity.MainActivity;
 
 public class GroupManager{
 
-    private Activity AddGroupActivity;
+    private Activity addGroupActivity;
     private Map<String, String> groupUrl;
     private String URLIndex;
     private String URLBranch;
+    SharedPreferences pref;
 
-    public GroupManager(Activity addGroup, String index) throws IOException {
-        this.AddGroupActivity = addGroup;
+    public GroupManager(Activity addGroup, String index) throws Exception {
+        this.addGroupActivity = addGroup;
         this.groupUrl = new HashMap<>();
         this.URLIndex = index;
         this.URLBranch = index.replace("gindex.html", "");
+        pref = addGroupActivity.getSharedPreferences(MainActivity.SCRAPPER_SAVE, 0);
         this.fillGroupUrl();
     }
 
-    protected void fillGroupUrl() throws IOException{
+    protected void fillGroupUrl() throws Exception
+    {
         Document doc = Jsoup.connect(this.URLIndex).get();
         for (Element e : doc.select("option")){
 
@@ -64,9 +68,14 @@ public class GroupManager{
         return list;
     }
 
+    public static boolean hasSelectedGroup(Context c)
+    {
+        SharedPreferences pref = c.getSharedPreferences(MainActivity.SCRAPPER_SAVE, 0);
+        return pref.contains("groupName");
+    }
+
     public void setGroup(String groupSelected){
         String urlSelected = this.groupUrl.get(groupSelected);
-        SharedPreferences pref = AddGroupActivity.getSharedPreferences(MainActivity.SCRAPPER_SAVE, 0);
         SharedPreferences.Editor prefEditor = pref.edit();
         prefEditor.putString("groupUrl", urlSelected);
         prefEditor.putString("groupName", groupSelected);
