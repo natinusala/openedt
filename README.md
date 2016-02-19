@@ -1,4 +1,4 @@
-# OpenEDT
+# ![](https://raw.githubusercontent.com/natinusala/openedt/master/app/src/main/res/mipmap-xhdpi/ic_launcher.png) OpenEDT
 
 Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une application android libre permettant la consultation d'emploi du temps à partir de leur smartphone, qui serait une alternative à une application déjà existante dont le code n'est pas à disposition de ses utilisateurs. 
  
@@ -19,10 +19,10 @@ Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une 
 Si vous voulez ajouter votre université ou composante, veuillez vous référer à la section <b>Contribuer au projet</b>
 ## Configuration et installation
 
-Depuis Android Studio: "checkout from VCS".
+Tout est automatisé grâce à Gradle et surtout grâce à Android Studio... vous n'avez qu'à faire "Checkout from VCS" en entrant l'adresse de ce repo !
 
 ## Contribuer au projet
-Allez sur [ce fichier](CONTRUBITING.md).
+Tout est dans [ce fichier](CONTRIBUTING.md).
 
 ## Licence
 
