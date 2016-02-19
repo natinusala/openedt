@@ -1,3 +1,17 @@
+/*
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package fr.natinusala.openedt.activity;
 
 import android.app.AlertDialog;
@@ -25,8 +39,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 import fr.natinusala.openedt.R;
@@ -48,7 +64,6 @@ public class MainActivity extends AppCompatActivity
 
     NavigationView navigationView;
     ArrayList<Group> groups;
-    MainActivity instance = this;
     Group selectedGroup;
     ViewPager viewPager;
     DrawerLayout drawer;
@@ -84,10 +99,11 @@ public class MainActivity extends AppCompatActivity
 
     public static int DRAWER_GROUP_ID = 42;
 
-    public void refresh(boolean loadFromFile) {
+    public void refresh(boolean loadFromFile)
+    {
         //Chargement de la liste des groupes
         if (loadFromFile) {
-            groups = new ArrayList<>(Arrays.asList(GroupManager.readGroups(this)));
+            groups = GroupManager.readGroups(this);
         }
 
         if (groups.isEmpty()) {
@@ -159,11 +175,11 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected Boolean doInBackground(Void... params)
         {
-            Week[] data = DataManager.getWeeksForGroup(instance, selectedGroup);
+            ArrayList<Week> data = DataManager.getWeeksForGroup(MainActivity.this, selectedGroup);
 
             if (data != null)
             {
-                weeks = new ArrayList<>(Arrays.asList(data));
+                weeks = data;
                 adapter = new TabsAdapter(getSupportFragmentManager());
                 return true;
             }
@@ -228,7 +244,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     groups.remove(selectedGroup);
-                    GroupManager.saveGroups(instance, groups.toArray(new Group[groups.size()]));
+                    GroupManager.saveGroups(MainActivity.this, groups.toArray(new Group[groups.size()]));
                     refresh(false);
                 }
             });
@@ -266,14 +282,16 @@ public class MainActivity extends AppCompatActivity
             switch (position)
             {
                 case 0:
-                    return new HomeFragment();
+                    return Fragment.instantiate(MainActivity.this, HomeFragment.class.getName());
                 case 1:
-                    return new DaysFragment();
+                    return Fragment.instantiate(MainActivity.this, DaysFragment.class.getName());
                 case 2:
-                    return new WeeksFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(WeeksFragment.BUNDLE_WEEKS, new Gson().toJson(weeks, new TypeToken<ArrayList<Week>>(){}.getType()));
+                    return Fragment.instantiate(MainActivity.this, WeeksFragment.class.getName(), bundle);
             }
 
-            return null;
+            return new Fragment();
         }
 
         @Override
@@ -295,7 +313,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    class HomeFragment extends Fragment
+    public static class HomeFragment extends Fragment
     {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -304,7 +322,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    class DaysFragment extends Fragment
+    public static class DaysFragment extends Fragment
     {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -313,11 +331,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    class WeeksFragment extends Fragment
+    public static class WeeksFragment extends Fragment
     {
+        public static final String BUNDLE_WEEKS = "weeks";
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+            ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>(){}.getType());
             View root = inflater.inflate(R.layout.activity_main_weeks_fragment, container, false);
 
             LinearLayout weeksContainer = (LinearLayout) root.findViewById(R.id.weeks_container);
@@ -326,9 +347,9 @@ public class MainActivity extends AppCompatActivity
             int weekCal = cal.get(Calendar.WEEK_OF_YEAR) + 1;
             int week = TimeUtils.getIdWeek(weekCal);
 
-            weeksContainer.addView(new WeekView(instance, weeks.get(week-1)));
-            weeksContainer.addView(new WeekView(instance, weeks.get(week)));
-            weeksContainer.addView(new WeekView(instance, weeks.get(week+1)));
+            weeksContainer.addView(new WeekView(getActivity(), weeks.get(week-1)));
+            weeksContainer.addView(new WeekView(getActivity(), weeks.get(week)));
+            weeksContainer.addView(new WeekView(getActivity(), weeks.get(week+1)));
 
             return root;
         }

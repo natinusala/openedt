@@ -1,3 +1,17 @@
+/*
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package fr.natinusala.openedt.activity;
 
 import android.content.Intent;
@@ -14,7 +28,6 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
@@ -31,11 +44,9 @@ public class AddGroupActivity extends AppCompatActivity
     Button valider;
     ArrayAdapter<String> groupAdapter;
 
-    Group[] groups;
+    ArrayList<Group> groups;
 
     ArrayList<Group> addedGroups;
-
-    AddGroupActivity instance = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +87,13 @@ public class AddGroupActivity extends AppCompatActivity
 
         componentSpinner.setAdapter(componentAdapter);
 
-        addedGroups = new ArrayList<>(Arrays.asList(GroupManager.readGroups(this)));
+        addedGroups = GroupManager.readGroups(this);
 
         //Bouton
         valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Group selectedGroup = groups[groupSpinner.getSelectedItemPosition()];
+                Group selectedGroup = groups.get(groupSpinner.getSelectedItemPosition());
                 if (addedGroups.contains(selectedGroup))
                 {
                     final Snackbar snack = Snackbar.make(findViewById(R.id.add_group_root), "Ce groupe a déjà été ajouté.", Snackbar.LENGTH_LONG);
@@ -90,8 +101,8 @@ public class AddGroupActivity extends AppCompatActivity
                 }
                 else
                 {
-                    GroupManager.addGroup(instance, selectedGroup);
-                    Intent intent = new Intent(instance, MainActivity.class);
+                    GroupManager.addGroup(AddGroupActivity.this, selectedGroup);
+                    Intent intent = new Intent(AddGroupActivity.this, MainActivity.class);
                     intent.putExtra(MainActivity.INTENT_SELECT_LAST_ONE, true);
                     startActivity(intent);
                     finish();

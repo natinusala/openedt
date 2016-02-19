@@ -1,3 +1,17 @@
+/*
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package fr.natinusala.openedt.adapter;
 
 import org.jsoup.Jsoup;
@@ -17,7 +31,7 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class CelcatAdapter implements IDataAdapter
 {
     @Override
-    public Group[] getGroupsList(Component c) throws IOException {
+    public ArrayList<Group> getGroupsList(Component c) throws IOException {
         String url = c.groups_url;
         ArrayList<Group> liste = new ArrayList<>();
         Document doc = Jsoup.connect(url).get();
@@ -30,11 +44,11 @@ public class CelcatAdapter implements IDataAdapter
             groupe.component = c;
             liste.add(groupe);
         }
-        return liste.toArray(new Group[liste.size()]);
+        return liste;
     }
 
     @Override
-    public Week[] getWeeks(Group g) throws IOException
+    public ArrayList<Week> getWeeks(Group g) throws IOException
     {
         ArrayList<Week> semaines = new ArrayList<>();
 
@@ -122,6 +136,6 @@ public class CelcatAdapter implements IDataAdapter
             semaines.get(event.weekid).events.add(event);
         }
 
-        return semaines.toArray(new Week[semaines.size()]);
+        return semaines;
     }
 }
