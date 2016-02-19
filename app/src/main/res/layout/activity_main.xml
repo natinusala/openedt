@@ -1,51 +1,25 @@
-<!--
-  ~    Licensed under the Apache License, Version 2.0 (the "License");
-  ~    you may not use this file except in compliance with the License.
-  ~    You may obtain a copy of the License at
-  ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~    Unless required by applicable law or agreed to in writing, software
-  ~    distributed under the License is distributed on an "AS IS" BASIS,
-  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~    See the License for the specific language governing permissions and
-  ~    limitations under the License.
-  ~
-  ~    Contributors : natinusala, Maveist
-  -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_root"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <ScrollView
+    <include
+        layout="@layout/app_bar_main"
         android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView" >
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
 
-
-
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/weekContainer"></LinearLayout>
-
-
-    </ScrollView>
-
-    <com.rey.material.widget.ProgressView
-        android:id="@+id/progress_circle"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:pv_autostart="true"
-        app:pv_circular="true"
-        app:pv_progressStyle="@style/Material.Drawable.CircularProgress"
-        app:pv_progressMode="indeterminate"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-</RelativeLayout>
+</android.support.v4.widget.DrawerLayout>

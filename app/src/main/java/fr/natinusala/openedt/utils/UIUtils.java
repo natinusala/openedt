@@ -25,30 +25,30 @@ import android.view.WindowManager;
 
 public class UIUtils
 {
-	public static int hexstringToColor(String colorStr)
-	{
-	    return Color.parseColor(colorStr);
-	}
+    public static int hexstringToColor(String colorStr)
+    {
+        return Color.parseColor(colorStr);
+    }
 
-	@SuppressWarnings("deprecation")
-	public static int getScreenWidth(Context context)
-	{
-		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		return display.getWidth();
-	}
+    @SuppressWarnings("deprecation")
+    public static int getScreenWidth(Context context)
+    {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        return display.getWidth();
+    }
 
-	@SuppressWarnings("unused")
-	public static float convertDpToPixel(float dp, Context context){
-		Resources resources = context.getResources();
-		DisplayMetrics metrics = resources.getDisplayMetrics();
-		return dp * (metrics.densityDpi / 160f);
-	}
+    @SuppressWarnings("unused")
+    public static float convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return dp * (metrics.densityDpi / 160f);
+    }
 
-	@SuppressWarnings("unused")
-	public static float convertPixelsToDp(float px, Context context){
-		Resources resources = context.getResources();
-		DisplayMetrics metrics = resources.getDisplayMetrics();
-		return px / (metrics.densityDpi / 160f);
-	}
+    @SuppressWarnings("unused")
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return px / (metrics.densityDpi / 160f);
+    }
 }

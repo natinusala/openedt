@@ -1,76 +1,61 @@
-/*
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- *    Contributors : natinusala, Maveist
- */
-
 package fr.natinusala.openedt.manager;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
-import fr.natinusala.openedt.activity.MainActivity;
+import fr.natinusala.openedt.data.Group;
 
-public class GroupManager{
+public class GroupManager
+{
+    private final static String PREF_IDENTIFIER = "groups";
+    private final static String GROUPS_LIST_IDENTIFIER = "groups_list";
+    private final static String SELECTED_GROUP_IDENTIFIER = "selected_group";
 
-    private Activity AddGroupActivity;
-    private Map<String, String> groupUrl;
-    private String URLIndex;
-    private String URLBranch;
+    public static Group[] readGroups(Context c)
+    {
+        SharedPreferences pref = c.getSharedPreferences(PREF_IDENTIFIER, Context.MODE_PRIVATE);
 
-    public GroupManager(Activity addGroup, String index) throws IOException {
-        this.AddGroupActivity = addGroup;
-        this.groupUrl = new HashMap<>();
-        this.URLIndex = index;
-        this.URLBranch = index.replace("gindex.html", "");
-        this.fillGroupUrl();
-    }
-
-    protected void fillGroupUrl() throws IOException{
-        Document doc = Jsoup.connect(this.URLIndex).get();
-        for (Element e : doc.select("option")){
-
-            String nameGroup = e.text();
-            String urlGroup = this.URLBranch + e.attr("value");
-            urlGroup = urlGroup.replace(".html", ".xml");
-            this.groupUrl.put(nameGroup, urlGroup);
-
+        if (pref.contains(GROUPS_LIST_IDENTIFIER))
+        {
+            return new Gson().fromJson(pref.getString(GROUPS_LIST_IDENTIFIER, ""), Group[].class);
+        }
+        else
+        {
+            return new Group[0];
         }
     }
 
-    public ArrayList<String> getKeys(){
-        ArrayList<String> list = new ArrayList<>(this.groupUrl.keySet());
-        Collections.sort(list);
-        return list;
+    public static void addGroup(Context c, Group g)
+    {
+        ArrayList<Group> groups = new ArrayList<>(Arrays.asList(readGroups(c)));
+        groups.add(g);
+        saveGroups(c, groups.toArray(new Group[1]));
     }
 
-    public void setGroup(String groupSelected){
-        String urlSelected = this.groupUrl.get(groupSelected);
-        SharedPreferences pref = AddGroupActivity.getSharedPreferences(MainActivity.SCRAPPER_SAVE, 0);
-        SharedPreferences.Editor prefEditor = pref.edit();
-        prefEditor.putString("groupUrl", urlSelected);
-        prefEditor.putString("groupName", groupSelected);
-        prefEditor.apply();
+    public static void saveGroups(Context c, Group[] groups)
+    {
+        SharedPreferences.Editor edit = c.getSharedPreferences(PREF_IDENTIFIER, Context.MODE_PRIVATE).edit();
+
+        edit.putString(GROUPS_LIST_IDENTIFIER, new Gson().toJson(groups, Group[].class));
+
+        edit.apply();
     }
 
+    public static Group getSelectedGroup(Context c)
+    {
+        SharedPreferences pref = c.getSharedPreferences(PREF_IDENTIFIER, Context.MODE_PRIVATE);
+        return new Gson().fromJson(pref.getString(SELECTED_GROUP_IDENTIFIER, ""), Group.class);
+    }
+
+    public static void saveSelectedGroup(Context c, Group g)
+    {
+        SharedPreferences.Editor edit = c.getSharedPreferences(PREF_IDENTIFIER, Context.MODE_PRIVATE).edit();
+        edit.putString(SELECTED_GROUP_IDENTIFIER, new Gson().toJson(g, Group.class));
+        edit.apply();
+    }
 }

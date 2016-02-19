@@ -16,18 +16,18 @@
 
 package fr.natinusala.openedt.data;
 
-public class Scale 
+public class Scale
 {
-	public static final int START = 800;
-	public int END;
+    public static final int START = 800;
+    public int END;
 
-	public Scale(int end)
-	{
-		this.END = end;
-	}
+    public Scale(int end)
+    {
+        this.END = end;
+    }
 
-	public int scalify(int value, int newscale)
-	{
-		return (int)((float)value/((float)END-(float)START) * (float)newscale);
-	}
+    public int scalify(int value, int newscale)
+    {
+        return (int)((float)value/((float)END-(float)START) * (float)newscale);
+    }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group>
+        <item android:title="Groupes" android:id="@+id/drawer_group_groups">
+            <menu>
+
+            </menu>
+        </item>
+    </group>
+
+    <item android:icon="@drawable/ic_add_circle_black_48dp"
+        android:id="@+id/add_group"
+        android:title="Ajouter un groupe"/>
+
+    <item
+        android:icon="@drawable/ic_settings_black_48dp"
+        android:title="Options" />
+    <item
+        android:icon="@drawable/ic_info_black_48dp"
+        android:title="A propos" />
+</menu>

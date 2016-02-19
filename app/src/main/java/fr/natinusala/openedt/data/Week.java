@@ -22,59 +22,49 @@ import java.util.Iterator;
 
 import fr.natinusala.openedt.utils.TimeUtils;
 
-public class Week 
+public class Week
 {
-	public int id;
-	public int num;
-	public String date;
+    public int id;
+    public int num;
+    public String date;
 
-	public int maximumEndTimeUnits = 0;
-	
-	public ArrayList<Event> events = new ArrayList<>();
-	
-	public Week(int num)
-	{
-		this.num = num;
-	}
-	
-	@Override	
-	public String toString() 
-	{
-		return "Semaine [id=" + id + ", num=" + num + ", date=" + date + "]";
-	}
+    public int maximumEndTimeUnits = 0;
 
+    public ArrayList<Event> events = new ArrayList<>();
 
-	//Attention décalage d'au moins une heure dans les times units des modules
-	public ArrayList<String> getNextModulePebble(boolean isWeekEnd){
-		int today = getNumberOfDay(Calendar.DAY_OF_WEEK);
-		// le -1 sur calNow.HOUR_OF_DAY est pour prévenir le décalage.
-		int nowHourMinutes = TimeUtils.convertFormattedTimeToUnits(Calendar.HOUR_OF_DAY - 1, Calendar.MINUTE);
-		ArrayList<String> strToSend = new ArrayList<>();
+    public Week(int num)
+    {
+        this.num = num;
+    }
 
-		Iterator<Event> e = events.iterator();
-		if(isWeekEnd){
-			while(e.hasNext() && strToSend.size() < 3){
-				strToSend.add(e.next().toPebbleString());
-			}
-		}else {
-			while (e.hasNext() && strToSend.size() < 3) {
-				Event event = e.next();
-				if ((event.day >= today)&& (event.endTimeUnits >= nowHourMinutes)) {
-					strToSend.add(event.toPebbleString() + "\n" + today +" " + event.day +"\n" + Integer.toString(event.endTimeUnits) +" "+ Integer.toString(nowHourMinutes));
-				}
-			}
-		}
-		return strToSend;
+    @Override
+    public String toString()
+    {
+        return "Semaine [id=" + id + ", num=" + num + ", date=" + date + "]";
+    }
 
-	}
+    //Attention décalage d'au moins une heure dans les times units des modules
+    public ArrayList<String> getNextModulePebble(boolean isWeekEnd){
+        int today = TimeUtils.getNumberOfDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+        // le -1 sur calNow.HOUR_OF_DAY est pour prévenir le décalage.
+        int nowHourMinutes = TimeUtils.convertFormattedTimeToUnits(Calendar.HOUR_OF_DAY - 1, Calendar.MINUTE);
+        ArrayList<String> strToSend = new ArrayList<>();
 
-	public static int getIdWeek(int trueWeekNumber){
-		return  ((52-34)+ trueWeekNumber % 53);
-	}
+        Iterator<Event> e = events.iterator();
+        if(isWeekEnd){
+            while(e.hasNext() && strToSend.size() < 3){
+                strToSend.add(e.next().toPebbleString());
+            }
+        }else {
+            while (e.hasNext() && strToSend.size() < 3) {
+                Event event = e.next();
+                if ((event.day >= today)&& (event.endTimeUnits >= nowHourMinutes)) {
+                    strToSend.add(event.toPebbleString() + "\n" + today +" " + event.day +"\n" + Integer.toString(event.endTimeUnits) +" "+ Integer.toString(nowHourMinutes));
+                }
+            }
+        }
+        return strToSend;
 
-	public static int getNumberOfDay(int numberDayCalendar){
-		return (numberDayCalendar + 4 ) % 7;
+    }
 
-	}
-	
 }

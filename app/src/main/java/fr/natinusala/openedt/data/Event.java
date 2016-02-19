@@ -18,63 +18,63 @@ package fr.natinusala.openedt.data;
 
 import java.util.ArrayList;
 
-public class Event 
+public class Event
 {
-	public int id = 0;
-	public int timesort = 0;
-	public int day = 0;
-	
-	public String prettytimes = "";
-	public String starttime = "";
-	public String endtime = "";
-	
-	public int startTimeUnits = 0;
-	public int durationUnits = 0;
-	public int endTimeUnits = 0;
-	
-	public int weekid = 0;
-	
-	public String category = "";
-	
-	public ArrayList<String> room = new ArrayList<>();
-	public ArrayList<String> module = new ArrayList<>();
-	public ArrayList<String> staff = new ArrayList<>();
-	public ArrayList<String> group = new ArrayList<>();
-	
-	public String colour = "#FFFFCC";
-	
-	public Event(int id, int timesort, String colour)
-	{
-		this.id = id;
-		this.timesort = timesort;
-		this.colour = colour;
+    public int id = 0;
+    public int timesort = 0;
+    public int day = 0;
 
-		if (this.colour.equals("#FFFFFF"))
-		{
-			this.colour = "#FFFFCC";
-		}
-	}
+    public String prettytimes = "";
+    public String starttime = "";
+    public String endtime = "";
+
+    public int startTimeUnits = 0;
+    public int durationUnits = 0;
+    public int endTimeUnits = 0;
+
+    public int weekid = 0;
+
+    public String category = "";
+
+    public ArrayList<String> room = new ArrayList<>();
+    public ArrayList<String> module = new ArrayList<>();
+    public ArrayList<String> staff = new ArrayList<>();
+    public ArrayList<String> group = new ArrayList<>();
+
+    public String colour = "#FFFFCC";
+
+    public Event(int id, int timesort, String colour)
+    {
+        this.id = id;
+        this.timesort = timesort;
+        this.colour = colour;
+
+        if (this.colour.equals("#FFFFFF"))
+        {
+            this.colour = "#FFFFCC";
+        }
+    }
 
 
-	public String createCategoryModule()
-	{
-		if (module.isEmpty() && category.isEmpty())
-		{
-			return "Inconnu";
-		}
-		else if (!category.isEmpty() && module.isEmpty())
-		{
-			return category + " inconnu(e)";
-		}
-		else if (category.isEmpty())
-		{
-			return getPrettyStringFromList(module);
-		}
-		else
-		{
-			return category + " : " + getPrettyStringFromList(module);
-		}
-	}
+    public String createCategoryModule()
+    {
+        if (module.isEmpty() && category.isEmpty())
+        {
+            return "Inconnu";
+        }
+        else if (!category.isEmpty() && module.isEmpty())
+        {
+            return category + " inconnu(e)";
+        }
+        else if (category.isEmpty())
+        {
+            return getPrettyStringFromList(module);
+        }
+        else
+        {
+            return category + " : " + getPrettyStringFromList(module);
+        }
+    }
 
     public String getPrettyRoom()
     {
@@ -86,24 +86,24 @@ public class Event
         return getPrettyStringFromList(staff);
     }
 
-	String getPrettyStringFromList(ArrayList<String> strings)
-	{
-		String r = "";
-		for (int i = 0; i < strings.size(); i++)
-		{
-			if (i != 0)
-			{
-				r += ", ";
-			}
+    String getPrettyStringFromList(ArrayList<String> strings)
+    {
+        String r = "";
+        for (int i = 0; i < strings.size(); i++)
+        {
+            if (i != 0)
+            {
+                r += ", ";
+            }
 
-			r += strings.get(i);
-		}
+            r += strings.get(i);
+        }
 
-		return r;
-	}
+        return r;
+    }
 
-	public String toPebbleString(){
-		return getPrettyStringFromList(module)+"\n"+starttime+"-"+endtime+"\n"+getPrettyStringFromList(room);
-	}
-	
+    public String toPebbleString(){
+        return getPrettyStringFromList(module)+"\n"+starttime+"-"+endtime+"\n"+getPrettyStringFromList(room);
+    }
+
 }

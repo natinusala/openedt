@@ -1,117 +1,212 @@
-/*
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- *    Contributors : natinusala, Maveist
- */
-
 package fr.natinusala.openedt.activity;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
-import com.getpebble.android.kit.PebbleKit;
-import com.getpebble.android.kit.util.PebbleDictionary;
-import com.rey.material.widget.ProgressView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.UUID;
 
 import fr.natinusala.openedt.R;
+import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
-import fr.natinusala.openedt.manager.SaveManager;
-import fr.natinusala.openedt.scrapping.CelcatEventScrapper;
-import fr.natinusala.openedt.views.WeekView;
+import fr.natinusala.openedt.manager.DataManager;
+import fr.natinusala.openedt.manager.GroupManager;
+import fr.natinusala.openedt.utils.TimeUtils;
+import fr.natinusala.openedt.view.WeekView;
 
 public class MainActivity extends AppCompatActivity
-{
-    public static final String SCRAPPER_SAVE = "OpenEDTData";
-    public static final String TITLE = "OpenEDT - ";
-    private static final UUID WATCHAPP_UUID = UUID.fromString("00f5db3f-43da-4229-9368-14aa35422398");
-    CelcatEventScrapper scrapper;
+        implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static String INTENT_SELECT_LAST_ONE = "slo";
+
+    public static int TABS_COUNT = 3;
+
+    //TODO Bouton refresh / réessayer
+
+    NavigationView navigationView;
+    ArrayList<Group> groups;
     MainActivity instance = this;
-    LinearLayout testWeek;
-    SaveManager  saveManager ;
-    PebbleKit.PebbleDataReceiver receiver;
+    Group selectedGroup;
+    ViewPager viewPager;
+    DrawerLayout drawer;
+    ProgressBar progressBar;
+
+    ArrayList<Week> weeks;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        saveManager = new SaveManager(this);
+        setContentView(R.layout.activity_main);
+        this.setTitle("OpenEDT");
 
-        if (!saveManager.isScrapperSaved())
-        {
-            Intent intent = new Intent(this, AddGroupActivity.class);
-            this.startActivity(intent);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = (DrawerLayout) findViewById(R.id.main_root);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        viewPager = (ViewPager) findViewById(R.id.main_pager);
+        viewPager.setOffscreenPageLimit(TABS_COUNT - 1);
+        progressBar = (ProgressBar) this.findViewById(R.id.main_progressBar);
+
+        //Refresh
+        refresh(true);
+    }
+
+    public static int DRAWER_GROUP_ID = 42;
+
+    public void refresh(boolean loadFromFile) {
+        //Chargement de la liste des groupes
+        if (loadFromFile) {
+            groups = new ArrayList<>(Arrays.asList(GroupManager.readGroups(this)));
         }
 
-        setContentView(R.layout.activity_main);
-        new Task(false).execute();
+        if (groups.isEmpty()) {
+            this.startActivity(new Intent(this, AddGroupActivity.class));
+            finish();
+            return;
+        }
 
-        //Pebble compatibility
-        receiver = new PebbleKit.PebbleDataReceiver(WATCHAPP_UUID) {
+        SubMenu subMenu = navigationView.getMenu().getItem(0).getSubMenu();
+        subMenu.clear();
 
-            @SuppressLint("SetTextI18n")
-            public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-                Button btn = new Button(getApplicationContext());
-                btn.setText("Just received a message! " /*+ Long.toString((data.getInteger(1)))*/);
-                testWeek.addView(btn);
-                PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
+        for (int i = 0; i < groups.size(); i++) {
+            Group g = groups.get(i);
+            subMenu.add(DRAWER_GROUP_ID, i, Menu.FIRST, g.name);
+        }
+        subMenu.setGroupCheckable(DRAWER_GROUP_ID, true, true);
 
-                ArrayList<String> dataToSend = scrapper.getNextModulePebble();
+        navigationView.invalidate();
 
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage(dataToSend.get(0) + "\n\n" + dataToSend.get(1) + "\n\n" + dataToSend.get(2));
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
+        Group lastSelectedGroup = GroupManager.getSelectedGroup(this);
+        //Si on a un SELECT_LAST_ONE de défini
+        if (getIntent().getBooleanExtra(INTENT_SELECT_LAST_ONE, false))
+        {
+            selectGroup(groups.get(groups.size()-1));
+        }
+        else if (lastSelectedGroup != null && groups.contains(lastSelectedGroup))
+        {
+            selectGroup(lastSelectedGroup);
+        }
+        else
+        {
+            selectGroup(groups.get(0));
+        }
+    }
 
-                PebbleDictionary msg = new PebbleDictionary();
+    void selectGroup(Group g)
+    {
+        if (selectedGroup != null && groups.contains(selectedGroup))
+        {
+            navigationView.getMenu().getItem(0).getSubMenu().findItem(groups.indexOf(selectedGroup)).setChecked(false);
+        }
+        navigationView.getMenu().getItem(0).getSubMenu().findItem(groups.indexOf(g)).setChecked(true);
+        selectedGroup = g;
+        GroupManager.saveSelectedGroup(this, g);
+        loadSelectedGroup();
+    }
 
-                msg.addString(0, dataToSend.get(0));
-                msg.addString(128, dataToSend.get(1));
-                msg.addString(256, dataToSend.get(2));
-                PebbleKit.sendDataToPebble(getApplicationContext(), WATCHAPP_UUID, msg);
+    void loadSelectedGroup()
+    {
+        this.setTitle(selectedGroup.name);
+
+        //Chargement de la liste des semaines
+        new Task().execute();
+    }
+
+    //TODO Spinner
+
+    class Task extends AsyncTask<Void, Void, Boolean>
+    {
+        TabsAdapter adapter;
+
+        @Override
+        protected void onPreExecute()
+        {
+            viewPager.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params)
+        {
+            Week[] data = DataManager.getWeeksForGroup(instance, selectedGroup);
+
+            if (data != null)
+            {
+                weeks = new ArrayList<>(Arrays.asList(data));
+                adapter = new TabsAdapter(getSupportFragmentManager());
+                return true;
             }
-        };
-        PebbleKit.registerReceivedDataHandler(this, receiver);
+            else
+            {
+                return false;
+            }
+        }
 
+        @Override
+        protected void onPostExecute(Boolean result)
+        {
+            if (result)
+            {
+                //Affichage des données
+                viewPager.setAdapter(adapter);
 
+                viewPager.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+            else
+            {
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.main_root), "Impossible de charger les données.", Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction("Réessayer", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new Task().execute();
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+            }
+
+        }
     }
 
     @Override
-    public void onPause()
-    {
-        super.onPause();
-        unregisterReceiver(receiver);
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -123,105 +218,119 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if(id == R.id.change_group){
-            this.startActivity(new Intent(this, AddGroupActivity.class));
+        if (item.getItemId() == R.id.delete_group)
+        {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setTitle("Attention !");
+            dialog.setMessage("Etes-vous sûr de vouloir supprimer ce groupe ?");
+            dialog.setNegativeButton("Non", null);
+            dialog.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    groups.remove(selectedGroup);
+                    GroupManager.saveGroups(instance, groups.toArray(new Group[groups.size()]));
+                    refresh(false);
+                }
+            });
+            dialog.show();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
-        refresh();
+    public boolean onNavigationItemSelected(MenuItem item) {
+
+        if (item.getGroupId() == DRAWER_GROUP_ID)
+        {
+            selectGroup(groups.get(item.getItemId()));
+        }
+        else if (item.getItemId() == R.id.add_group)
+        {
+            this.startActivity(new Intent(this, AddGroupActivity.class));
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
-    public void refresh(){
-        SharedPreferences pref = getSharedPreferences(SCRAPPER_SAVE, 0);
-        String grpName = pref.getString("groupName", "Inconnu");
-        setTitle(TITLE + grpName);
-        ProgressView pv = (ProgressView) findViewById(R.id.progress_circle);
-        pv.setVisibility(View.VISIBLE);
-        new Task(true).execute();
-    }
-
-    private class Task extends AsyncTask<Void, Void, Void> {
-
-        private boolean refresh;
-
-        public Task(boolean toRefresh){
-            this.refresh = toRefresh;
+    class TabsAdapter extends FragmentPagerAdapter
+    {
+        public TabsAdapter(FragmentManager fm) {
+            super(fm);
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-            try
+        public Fragment getItem(int position)
+        {
+            switch (position)
             {
-                if(!this.refresh) {
-                    scrapper = saveManager.getEventScrapper();
-                }else{
-                    scrapper = saveManager.refresh();
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-                //TODO Afficher une erreur
+                case 0:
+                    return new HomeFragment();
+                case 1:
+                    return new DaysFragment();
+                case 2:
+                    return new WeeksFragment();
             }
 
             return null;
         }
 
         @Override
-        protected void onPostExecute(Void result) {
-            try {
-                ProgressView pv = (ProgressView) findViewById(R.id.progress_circle);
-                pv.setVisibility(View.GONE);
-                Calendar cal = Calendar.getInstance();
-                int weekCal = cal.get(Calendar.WEEK_OF_YEAR) + 1;
-                int week = Week.getIdWeek(weekCal);
-
-                LinearLayout weeksList = (LinearLayout) findViewById(R.id.weekContainer);
-                weeksList.removeAllViews();
-                testWeek = weeksList;
-
-
-                /* For debug
-                 //TODO a checkbox in setting to display some button to access for debug's methods
-                Button btnString = new Button(getApplicationContext());
-                btnString.setText("Get current module");
-                btnString.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        getCours();
-
-                    }
-                });
-                boolean connected = PebbleKit.isWatchConnected(getApplicationContext());
-                weeksList.addView(btnString);
-                if (!connected) {
-                    Button btn = new Button(getApplicationContext());
-                    btn.setText("Not connected");
-                    weeksList.addView(btn);
-                }
-                 END FOR DEBUG */
-                weeksList.addView(new WeekView(instance, scrapper.semaines.get(week - 1)));
-                weeksList.addView(new WeekView(instance, scrapper.semaines.get(week)));
-                weeksList.addView(new WeekView(instance, scrapper.semaines.get(week + 1)));
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                //TODO Afficher une erreur
-            }
-
+        public int getCount() {
+            return TABS_COUNT;
         }
 
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "ACCUEIL";
+                case 1:
+                    return "JOURS";
+                case 2:
+                    return "SEMAINES";
+            }
+            return null;
+        }
+    }
 
+    class HomeFragment extends Fragment
+    {
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            return inflater.inflate(R.layout.activity_main_home_fragment, container, false);
+        }
+    }
+
+    class DaysFragment extends Fragment
+    {
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            return inflater.inflate(R.layout.activity_main_days_fragment, container, false);
+        }
+    }
+
+    class WeeksFragment extends Fragment
+    {
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            View root = inflater.inflate(R.layout.activity_main_weeks_fragment, container, false);
+
+            LinearLayout weeksContainer = (LinearLayout) root.findViewById(R.id.weeks_container);
+
+            Calendar cal = Calendar.getInstance();
+            int weekCal = cal.get(Calendar.WEEK_OF_YEAR) + 1;
+            int week = TimeUtils.getIdWeek(weekCal);
+
+            weeksContainer.addView(new WeekView(instance, weeks.get(week-1)));
+            weeksContainer.addView(new WeekView(instance, weeks.get(week)));
+            weeksContainer.addView(new WeekView(instance, weeks.get(week+1)));
+
+            return root;
+        }
     }
 }

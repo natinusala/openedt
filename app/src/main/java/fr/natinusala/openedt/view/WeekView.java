@@ -14,7 +14,7 @@
  *    Contributors : natinusala, Maveist
  */
 
-package fr.natinusala.openedt.views;
+package fr.natinusala.openedt.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -27,11 +27,11 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,7 +60,7 @@ public class WeekView extends CardView
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics());
     }
 
-    public WeekView(Context context, Week week) throws ParseException
+    public WeekView(Context context, Week week)
     {
         super(context);
 
@@ -87,7 +87,7 @@ public class WeekView extends CardView
             params.rightMargin = dp(5);
             dayLayout.setLayoutParams(params);
 
-            DayFrame frame = new DayFrame(context, createDateForDay(i));
+            DayFrame frame = new DayFrame(context, TimeUtils.createDateForDay(i, week));
             dayLayout.addView(frame);
 
             if (i == 5 || i == 6)
@@ -180,19 +180,10 @@ public class WeekView extends CardView
             });
 
             //Données
-            try
-            {
-                Date dayDate = createDateForDay(event.day);
-                SimpleDateFormat sdf = TimeUtils.createDateFormat();
+            Date dayDate = TimeUtils.createDateForDay(event.day, week);
+            SimpleDateFormat sdf = TimeUtils.createDateFormat();
 
-                date.setText("Le " + sdf.format(dayDate) + " (semaine " + week.num + ")");
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-                date.setText("Erreur ! " + e.getLocalizedMessage());
-
-            }
+            date.setText("Le " + sdf.format(dayDate) + " (semaine " + week.num + ")");
 
             encart.setBackgroundColor(Color.parseColor(event.colour));
             salle.setText("En salle " + event.getPrettyRoom());
@@ -204,7 +195,7 @@ public class WeekView extends CardView
         }
     }
 
-    class EventFrame extends com.rey.material.widget.Button
+    class EventFrame extends Button
     {
         public Event event;
         public EventFrame(Context c, final Event e)
@@ -215,17 +206,14 @@ public class WeekView extends CardView
 
             this.setBackgroundColor(UIUtils.hexstringToColor(e.colour));
 
-            this.setOnClickListener(new OnClickListener()
-            {
+            this.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     new EventDialog(context, e).show();
                 }
             });
 
             setText(e.createCategoryModule());
-            applyStyle(R.style.Material_Drawable_Ripple_Touch_Light);
             setTypeface(null, Typeface.NORMAL);
             setTextSize(8);
             setPadding(dp(1), dp(1), dp(1), dp(1));
@@ -273,14 +261,5 @@ public class WeekView extends CardView
             this.addView(dayView);
             this.addView(dateView);
         }
-    }
-
-    Date createDateForDay(int day) throws ParseException
-    {
-        SimpleDateFormat sdf = TimeUtils.createDateFormat();
-        Calendar c = Calendar.getInstance();
-        c.setTime(sdf.parse(week.date));
-        c.add(Calendar.DATE, day);
-        return c.getTime();
     }
 }
