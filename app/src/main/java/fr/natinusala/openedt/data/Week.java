@@ -67,4 +67,13 @@ public class Week
 
     }
 
+    public ArrayList<Event> getEventOfDay(int numberOfDay){
+        ArrayList<Event> eventOfDay = new ArrayList<Event>();
+        for(Event e : events){
+            if(e.day == numberOfDay){
+                eventOfDay.add(e);
+            }
+        }
+        return eventOfDay;
+    }
 }

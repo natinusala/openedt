@@ -50,6 +50,7 @@ import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.manager.DataManager;
 import fr.natinusala.openedt.manager.GroupManager;
+import fr.natinusala.openedt.manager.PebbleManager;
 import fr.natinusala.openedt.utils.TimeUtils;
 import fr.natinusala.openedt.view.WeekView;
 
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity
     ViewPager viewPager;
     DrawerLayout drawer;
     ProgressBar progressBar;
+    PebbleManager pebbleManager;
 
     ArrayList<Week> weeks;
 
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity
         viewPager = (ViewPager) findViewById(R.id.main_pager);
         viewPager.setOffscreenPageLimit(TABS_COUNT - 1);
         progressBar = (ProgressBar) this.findViewById(R.id.main_progressBar);
+
+        pebbleManager = new PebbleManager(this);
 
         //Refresh
         refresh(true);
@@ -176,7 +180,7 @@ public class MainActivity extends AppCompatActivity
         protected Boolean doInBackground(Void... params)
         {
             ArrayList<Week> data = DataManager.getWeeksForGroup(MainActivity.this, selectedGroup);
-
+            pebbleManager.setWeekList(data);
             if (data != null)
             {
                 weeks = data;
