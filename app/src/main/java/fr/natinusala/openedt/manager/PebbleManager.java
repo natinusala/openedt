@@ -10,17 +10,15 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
+ *
+ * Created by Maveist on 19/02/16.
  */
-
 package fr.natinusala.openedt.manager;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.util.Log;
-import android.widget.Button;
 
 import com.getpebble.android.kit.*;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -29,24 +27,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.UUID;
-
-import fr.natinusala.openedt.activity.MainActivity;
 import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.utils.TimeUtils;
 
-/**
- * Created by Maveist on 19/02/16.
- */
+
 public class PebbleManager {
 
     private static UUID PEBBLE_APP_UUID = UUID.fromString("00f5db3f-43da-4229-9368-14aa35422398");
     private Activity activity;
-    private PebbleKit.PebbleDataReceiver receiver;
     private ArrayList<Week> weeksList;
 
     public PebbleManager(Activity act){
         activity = act;
-        receiver = new PebbleKit.PebbleDataReceiver(PEBBLE_APP_UUID) {
+        PebbleKit.PebbleDataReceiver receiver = new PebbleKit.PebbleDataReceiver(PEBBLE_APP_UUID) {
 
             @SuppressLint("SetTextI18n")
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
@@ -100,11 +93,13 @@ public class PebbleManager {
                 }
             }
         }
-        ArrayList<String> currentEventList = w.getNextModulePebble(weekend);
-        while(currentEventList.size() < 3){
-            currentEventList.addAll(week.next().getNextModulePebble(true));
+        ArrayList<String> currentEventList = null;
+        if(w != null) {
+             currentEventList = w.getNextModulePebble(weekend);
+            while (currentEventList.size() < 3) {
+                currentEventList.addAll(week.next().getNextModulePebble(true));
+            }
         }
-
         return currentEventList;
     }
 }
