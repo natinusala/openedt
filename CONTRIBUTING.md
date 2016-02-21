@@ -13,5 +13,6 @@ Il y a cependant quelques règles à suivre !
  * Lorsque vous modifiez le code de quelqu'un ou que vous faites une refonte de fonctionnalités largement utilisées, il peut être pertinent de prévenir les personnes concernées dans la PR
  * Aucune modification qui augmente la version de l'API minimale d'Android requise (donc qui diminue le nombre d'appareils visés)
  * Aucun warning n'est autorisé dans la version finale du code
+ * Ne touchez pas aux numéros de version du manifest de ce dépôt, elle sera incrémentée lorsqu'on publiera l'application sur le Play Store (vous pouvez faire votre propre versionnage sur votre fork)
  
  Enfin, sachez que l'on vous demandera peut-être d'ajuster votre code avant d'accepter la PR concernée.

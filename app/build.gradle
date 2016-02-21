@@ -28,6 +28,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5'
     compile 'com.android.support:cardview-v7:23.1.1'
     compile files('libs/jsoup-1.8.3.jar')
+    compile 'com.getpebble:pebblekit:3.0.0'
 }
 
 repositories {
