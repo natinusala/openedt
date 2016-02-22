@@ -165,8 +165,6 @@ public class MainActivity extends AppCompatActivity
         new Task().execute();
     }
 
-    //TODO Spinner
-
     class Task extends AsyncTask<Void, Void, Boolean>
     {
         TabsAdapter adapter;
