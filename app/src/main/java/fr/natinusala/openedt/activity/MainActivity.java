@@ -15,6 +15,7 @@
 package fr.natinusala.openedt.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -24,6 +25,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -45,6 +47,8 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
@@ -52,7 +56,7 @@ import fr.natinusala.openedt.manager.DataManager;
 import fr.natinusala.openedt.manager.GroupManager;
 import fr.natinusala.openedt.manager.PebbleManager;
 import fr.natinusala.openedt.utils.TimeUtils;
-import fr.natinusala.openedt.view.WeekView;
+import fr.natinusala.openedt.fragment.WeekFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -63,37 +67,35 @@ public class MainActivity extends AppCompatActivity
 
     //TODO Bouton refresh / réessayer
 
-    NavigationView navigationView;
-    ArrayList<Group> groups;
-    Group selectedGroup;
-    ViewPager viewPager;
-    DrawerLayout drawer;
-    ProgressBar progressBar;
+    @Bind(R.id.nav_view) NavigationView navigationView;
+    @Bind(R.id.main_pager) ViewPager viewPager;
+    @Bind(R.id.main_root) DrawerLayout drawer;
+    @Bind(R.id.main_progressBar) ProgressBar progressBar;
     PebbleManager pebbleManager;
 
+    ArrayList<Group> groups;
+    Group selectedGroup;
     ArrayList<Week> weeks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
         this.setTitle("OpenEDT");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = (DrawerLayout) findViewById(R.id.main_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        viewPager = (ViewPager) findViewById(R.id.main_pager);
         viewPager.setOffscreenPageLimit(TABS_COUNT - 1);
-        progressBar = (ProgressBar) this.findViewById(R.id.main_progressBar);
 
         pebbleManager = new PebbleManager(this);
 
@@ -351,11 +353,28 @@ public class MainActivity extends AppCompatActivity
             int weekCal = cal.get(Calendar.WEEK_OF_YEAR) + 1;
             int week = TimeUtils.getIdWeek(weekCal);
 
-            weeksContainer.addView(new WeekView(getActivity(), weeks.get(week-1)));
-            weeksContainer.addView(new WeekView(getActivity(), weeks.get(week)));
-            weeksContainer.addView(new WeekView(getActivity(), weeks.get(week+1)));
+            weeksContainer.setId(R.id.activity_main_weeks_container);
+
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            transaction.add(weeksContainer.getId(), createWeekFragment(getActivity(), weeks.get(week-1)));
+            transaction.add(weeksContainer.getId(), createWeekFragment(getActivity(), weeks.get(week)));
+            transaction.add(weeksContainer.getId(), createWeekFragment(getActivity(), weeks.get(week+1)));
+            transaction.commit();
 
             return root;
         }
+    }
+
+    static Fragment createWeekFragment(Context c, Week w)
+    {
+        Fragment f = Fragment.instantiate(c, WeekFragment.class.getName());
+
+        Bundle bundle = new Bundle();
+        bundle.putString(WeekFragment.BUNDLE_WEEK, new Gson().toJson(w, Week.class));
+
+        f.setArguments(bundle);
+
+        return f;
     }
 }

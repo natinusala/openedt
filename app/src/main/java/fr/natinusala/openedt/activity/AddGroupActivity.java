@@ -29,6 +29,8 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.data.Group;
@@ -38,10 +40,11 @@ public class AddGroupActivity extends AppCompatActivity
 {
     //TODO Ajouter des barres de recherche
 
-    Spinner componentSpinner;
-    Spinner groupSpinner;
-    CardView groupCard;
-    Button valider;
+    @Bind(R.id.componentSpinner) Spinner componentSpinner;
+    @Bind(R.id.groupSpinner) Spinner groupSpinner;
+    @Bind(R.id.groupCard) CardView groupCard;
+    @Bind(R.id.addGroupButton) Button valider;
+
     ArrayAdapter<String> groupAdapter;
 
     ArrayList<Group> groups;
@@ -52,21 +55,18 @@ public class AddGroupActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
+        ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         this.setTitle("Ajouter un groupe");
 
         //GroupSpinner
-        groupSpinner = (Spinner) this.findViewById(R.id.groupSpinner);
         groupAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
         groupSpinner.setAdapter(groupAdapter);
 
-        groupCard = (CardView) this.findViewById(R.id.groupCard);
-        valider = (Button) this.findViewById(R.id.addGroupButton);
-
         //Composante
-        componentSpinner = (Spinner) this.findViewById(R.id.componentSpinner);
         componentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
