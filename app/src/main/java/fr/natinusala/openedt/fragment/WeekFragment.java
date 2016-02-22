@@ -23,15 +23,18 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -161,22 +164,17 @@ public class WeekFragment extends Fragment
             wmlp.gravity = Gravity.BOTTOM;
             wmlp.y = UIUtils.dp(getActivity(), 16);
 
-            //Buttons
-            ((AlertDialog)getDialog()).setButton(AlertDialog.BUTTON_NEUTRAL, "Fermer", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dismiss();
-                }
-            });
-
             return layout;
         }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState)
         {
-            return new AlertDialog.Builder(getActivity()).create();
+            Dialog dialog = super.onCreateDialog(savedInstanceState);
+            setStyle(AppCompatDialogFragment.STYLE_NO_TITLE, 0);
+            return dialog;
         }
+
     }
 
     class EventFrame extends Button

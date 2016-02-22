@@ -53,15 +53,10 @@ public class EventFragment extends Fragment
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setBackgroundColor(Color.WHITE);
 
-        LinearLayout encart = new LinearLayout(getActivity());
-        encart.setOrientation(LinearLayout.VERTICAL);
-        encart.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        encart.setPadding(UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 8), UIUtils.dp(getActivity(), 25), UIUtils.dp(getActivity(), 8));
-        layout.addView(encart);
-
         TextView module = new TextView(getActivity());
+        module.setPadding(UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 8), UIUtils.dp(getActivity(), 25), UIUtils.dp(getActivity(), 8));
         module.setTextSize(28);
-        encart.addView(module);
+        layout.addView(module);
 
         TextView heure = new TextView(getActivity());
         heure.setTextSize(16);
@@ -89,7 +84,7 @@ public class EventFragment extends Fragment
 
         date.setText(String.format("Le %s (semaine %d)", sdf.format(dayDate), week.num));
 
-        encart.setBackgroundColor(Color.parseColor(event.colour));
+        module.setBackgroundColor(Color.parseColor(event.colour));
         salle.setText("En salle " + event.getPrettyRoom());
         heure.setText("De " + event.starttime + " à " + event.endtime);
         module.setText(event.createCategoryModule());
