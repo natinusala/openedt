@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity
 
     public static int TABS_COUNT = 3;
 
-    //TODO Bouton refresh / réessayer
-
     @Bind(R.id.nav_view) NavigationView navigationView;
     @Bind(R.id.main_pager) ViewPager viewPager;
     @Bind(R.id.main_root) DrawerLayout drawer;
