@@ -14,6 +14,7 @@
 
 package fr.natinusala.openedt.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,9 +23,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
@@ -38,14 +43,15 @@ import fr.natinusala.openedt.manager.GroupManager;
 
 public class AddGroupActivity extends AppCompatActivity
 {
-    //TODO Ajouter des barres de recherche
-
     @Bind(R.id.componentSpinner) Spinner componentSpinner;
     @Bind(R.id.groupSpinner) Spinner groupSpinner;
     @Bind(R.id.groupCard) CardView groupCard;
     @Bind(R.id.addGroupButton) Button valider;
+    @Bind(R.id.add_group_search_button) ImageButton searchButton;
+    @Bind(R.id.groupTextView) AutoCompleteTextView groupTextView;
 
-    ArrayAdapter<String> groupAdapter;
+    ArrayAdapter<String> groupSpinnerAdapter;
+    ArrayAdapter<String> groupTextViewAdapter;
 
     ArrayList<Group> groups;
 
@@ -63,8 +69,8 @@ public class AddGroupActivity extends AppCompatActivity
         this.setTitle("Ajouter un groupe");
 
         //GroupSpinner
-        groupAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
-        groupSpinner.setAdapter(groupAdapter);
+        groupSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
+        groupSpinner.setAdapter(groupSpinnerAdapter);
 
         //Composante
         componentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -111,7 +117,59 @@ public class AddGroupActivity extends AppCompatActivity
             }
         });
 
+        groupTextViewAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
+        groupTextView.setAdapter(groupTextViewAdapter);
+        groupTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                groupSpinner.setSelection(groupSpinnerAdapter.getPosition(groupTextView.getText().toString()));
+                showSpinner();
+            }
+        });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                if (groupSpinner.getVisibility() == View.VISIBLE) {
+                    valider.setEnabled(false);
+                    searchButton.setImageResource(R.drawable.ic_close_black_48dp);
+                    groupSpinner.setVisibility(View.INVISIBLE);
+                    groupTextView.setVisibility(View.VISIBLE);
+                    toggleKeyboard(true);
+                } else {
+                    showSpinner();
+                }
+            }
+        });
+
         new Task().execute();
+    }
+
+    void toggleKeyboard(boolean show)
+    {
+        View view = this.getCurrentFocus();
+        if (view != null)
+        {
+            if (show)
+            {
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(groupTextView, 0);
+            }
+            else
+            {
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+        }
+    }
+
+    void showSpinner()
+    {
+        toggleKeyboard(false);
+        valider.setEnabled(true);
+        searchButton.setImageResource(R.drawable.ic_search_black_48dp);
+        groupSpinner.setVisibility(View.VISIBLE);
+        groupTextView.setVisibility(View.INVISIBLE);
     }
 
     class Task extends AsyncTask<Void, Void, Boolean>
@@ -124,6 +182,7 @@ public class AddGroupActivity extends AppCompatActivity
             groupCard.setVisibility(View.INVISIBLE);
             valider.setVisibility(View.INVISIBLE);
             selectedComponent = Component.values()[componentSpinner.getSelectedItemPosition()];
+            showSpinner();
         }
 
         @Override
@@ -146,10 +205,12 @@ public class AddGroupActivity extends AppCompatActivity
         {
             if (result)
             {
-                groupAdapter.clear();
+                groupTextViewAdapter.clear();
+                groupSpinnerAdapter.clear();
                 for (Group g : groups)
                 {
-                    groupAdapter.add(g.name);
+                    groupTextViewAdapter.add(g.name);
+                    groupSpinnerAdapter.add(g.name);
                 }
 
                 groupCard.setVisibility(View.VISIBLE);
