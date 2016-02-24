@@ -44,19 +44,7 @@ public class PebbleManager {
             @SuppressLint("SetTextI18n")
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
                 ArrayList<String> dataToSend = getNextEventPebble();
-                /*AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage(dataToSend.get(0) + "\n\n" + dataToSend.get(1) + "\n\n" + dataToSend.get(2));
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();*/
-
                 PebbleDictionary msg = new PebbleDictionary();
-
                 msg.addString(0, dataToSend.get(0));
                 msg.addString(128, dataToSend.get(1));
                 msg.addString(256, dataToSend.get(2));
