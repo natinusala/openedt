@@ -13,10 +13,24 @@ Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une 
 
 ##Liste des universités et composantes supportées
   + Université de Nantes
-    - Médecine
+    - Médecine, Pharmacie
     - IUT de Nantes
+    - IUT Saint Nazaire
+    - Droit et sciences politiques
+    - IEMN-IAE
+    - Iquabian
+    - Odontologie
+    - STAPS
+    - ESPE Le Mans
+    - ESPE Nantes
+    - Langues - CIL
+    - Irffle
+    - Histoire
+    - IGARUN
+    - Psychologie
+    - Lettres et langages
 
-Si vous voulez ajouter votre université ou composante, veuillez vous référer à la section <b>Contribuer au projet</b>
+Si vous voulez ajouter votre université ou composante, veuillez vous référer à la section <b>Contribuer au projet</b>.
 ## Configuration et installation
 
 Tout est automatisé grâce à Gradle et surtout grâce à Android Studio... vous n'avez qu'à faire "Checkout from VCS" en entrant l'adresse de ce repo !

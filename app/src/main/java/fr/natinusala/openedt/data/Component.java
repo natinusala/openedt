@@ -16,8 +16,24 @@ package fr.natinusala.openedt.data;
 
 public enum Component
 {
+    //TODO Séparer par universités
+
     IUT_NANTES("IUT Nantes", "https://edt.univ-nantes.fr/iut_nantes/gindex.html", DataSourceType.CELCAT),
-    MEDECINE("Médecine, Pharmacie", "https://edt.univ-nantes.fr/medecine/gindex.html", DataSourceType.CELCAT);
+    MEDECINE("Médecine, Pharmacie", "https://edt.univ-nantes.fr/medecine/gindex.html", DataSourceType.CELCAT),
+    DROIT("Droit et sciences politiques", "https://www.droit.univ-nantes.fr/ept/gindex.html", DataSourceType.CELCAT),
+    IEMNIAE("IEMN-IAE", "https://edt.univ-nantes.fr/iemn_iae/gindex.html", DataSourceType.CELCAT),
+    IQUABIAN("Iquabian", "https://edt.univ-nantes.fr/iquabian/gindex.html", DataSourceType.CELCAT),
+    ODONTOLOGIE("Odontologie", "https://edt.univ-nantes.fr/odontologie/gindex.html", DataSourceType.CELCAT),
+    STAPS("STAPS", "https://edt.univ-nantes.fr/staps/gindex.html", DataSourceType.CELCAT),
+    ESPE_LEMANS("ESPE Le Mans", "https://edt.univ-nantes.fr/iufm-mans/gindex.html", DataSourceType.CELCAT),
+    ESPE_NANTES("ESPE Nantes", "https://edt.univ-nantes.fr/iufm-nantes/gindex.html", DataSourceType.CELCAT),
+    LANGUES("Langues - CIL", "https://edt.univ-nantes.fr/langues/gindex.html", DataSourceType.CELCAT),
+    IRFFLE("Irffle", "https://edt.univ-nantes.fr/irffle/gindex.html", DataSourceType.CELCAT),
+    HISTOIRE("Histoire", "https://edt.univ-nantes.fr/histoire/gindex.html", DataSourceType.CELCAT),
+    IGARUN("IGARUN", "https://edt.univ-nantes.fr/igarun/gindex.html", DataSourceType.CELCAT),
+    PSYCHOLOGIE("Psychologie", "https://edt.univ-nantes.fr/psycho/gindex.html", DataSourceType.CELCAT),
+    LETTRES("Lettres et langages", "https://edt.univ-nantes.fr/lettreslangages/gindex.html", DataSourceType.CELCAT),
+    IUT_SAINT_NAZAIRE("IUT Saint Nazaire", "https://edt.univ-nantes.fr/iut_st_naz/gindex.html", DataSourceType.CELCAT);
 
     Component(String name, String groups_url, DataSourceType sourceType)
     {
