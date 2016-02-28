@@ -74,4 +74,38 @@ public class WeekManager {
         }
         return strToReturn;
     }
+
+    public static Week getCurrentWeek(ArrayList<Week> weeks){
+        Calendar cal = Calendar.getInstance();
+        int weekID = TimeUtils.getIdWeek(cal.get(Calendar.WEEK_OF_YEAR));
+        for(Week w : weeks){
+            if(w.id == weekID){
+                return w;
+            }
+        }
+        return null;
+    }
+
+    //Transforme la liste des events par semaine en liste des events par jour
+    public static ArrayList<ArrayList<Event>> getEventPerDay(Week week){
+        ArrayList<ArrayList<Event>> days = new ArrayList<>();
+        ArrayList<Event> events = new ArrayList<>();
+        if(week.events.size() > 0) {
+            int dayCursor = week.events.get(0).day;//initialsation avec le premier event
+            ArrayList<Event> weekEvent = week.events;
+            for (Event e : weekEvent) {
+                if (e.day == dayCursor) {
+                    events.add(e);
+                } else if (e.day > dayCursor) {
+                    days.add(events);
+                    events = new ArrayList<>();
+                    dayCursor = e.day;
+                    events.add(e);
+                }
+            }
+        }else{
+            return null;
+        }
+        return days;
+    }
 }

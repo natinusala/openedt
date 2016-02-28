@@ -85,10 +85,10 @@ public class EventFragment extends Fragment
         date.setText(String.format("Le %s (semaine %d)", sdf.format(dayDate), week.num));
 
         module.setBackgroundColor(Color.parseColor(event.colour));
-        salle.setText("En salle " + event.getPrettyRoom());
-        heure.setText("De " + event.starttime + " à " + event.endtime);
+        salle.setText(String.format("En salle %s", event.getPrettyRoom()));
+        heure.setText(String.format("De %s à %s", event.starttime, event.endtime));
         module.setText(event.createCategoryModule());
-        professeurs.setText("Avec " + event.getPrettyStaff());
+        professeurs.setText(String.format("Avec %s", event.getPrettyStaff()));
 
         return layout;
     }

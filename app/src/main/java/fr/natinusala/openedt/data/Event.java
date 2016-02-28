@@ -16,7 +16,14 @@
 
 package fr.natinusala.openedt.data;
 
+
+
+
+
 import java.util.ArrayList;
+
+
+
 
 public class Event
 {
@@ -105,5 +112,6 @@ public class Event
     public String toPebbleString(){
         return getPrettyStringFromList(module)+"\n"+starttime+"-"+endtime+"\n"+getPrettyStringFromList(room);
     }
+
 
 }

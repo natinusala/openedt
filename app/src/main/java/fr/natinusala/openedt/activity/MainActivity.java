@@ -41,8 +41,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,11 +52,14 @@ import java.util.Calendar;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import fr.natinusala.openedt.R;
+import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.fragment.EventFragment;
 import fr.natinusala.openedt.manager.DataManager;
 import fr.natinusala.openedt.manager.GroupManager;
 import fr.natinusala.openedt.manager.PebbleManager;
+import fr.natinusala.openedt.manager.WeekManager;
 import fr.natinusala.openedt.utils.TimeUtils;
 import fr.natinusala.openedt.fragment.WeekFragment;
 
@@ -162,6 +167,7 @@ public class MainActivity extends AppCompatActivity
         //Chargement de la liste des semaines
         new Task().execute();
     }
+
 
     class Task extends AsyncTask<Void, Void, Boolean>
     {
@@ -287,11 +293,13 @@ public class MainActivity extends AppCompatActivity
                 case 0:
                     return Fragment.instantiate(MainActivity.this, HomeFragment.class.getName());
                 case 1:
-                    return Fragment.instantiate(MainActivity.this, DaysFragment.class.getName());
+                    Bundle bundle1 = new Bundle();
+                    bundle1.putString(WeeksFragment.BUNDLE_WEEKS, new Gson().toJson(weeks, new TypeToken<ArrayList<Week>>(){}.getType()));
+                    return Fragment.instantiate(MainActivity.this, DaysFragment.class.getName(), bundle1);
                 case 2:
-                    Bundle bundle = new Bundle();
-                    bundle.putString(WeeksFragment.BUNDLE_WEEKS, new Gson().toJson(weeks, new TypeToken<ArrayList<Week>>(){}.getType()));
-                    return Fragment.instantiate(MainActivity.this, WeeksFragment.class.getName(), bundle);
+                    Bundle bundle2 = new Bundle();
+                    bundle2.putString(WeeksFragment.BUNDLE_WEEKS, new Gson().toJson(weeks, new TypeToken<ArrayList<Week>>(){}.getType()));
+                    return Fragment.instantiate(MainActivity.this, WeeksFragment.class.getName(), bundle2);
             }
 
             return new Fragment();
@@ -325,12 +333,51 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static class DaysFragment extends Fragment
-    {
+    public static class DaysFragment extends Fragment {
+        public static final String BUNDLE_WEEKS = "weeks";
+
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-        {
-            return inflater.inflate(R.layout.activity_main_days_fragment, container, false);
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {
+            }.getType());
+            Week currentWeek = WeekManager.getCurrentWeek(weeks);
+           // Format formater = TimeUtils.createDateFormat();  Pas utilisé à décommenttez par la suite (voir en dessous).
+
+            View root = inflater.inflate(R.layout.activity_main_days_fragment, container, false);
+            LinearLayout daysContainer = (LinearLayout) root.findViewById(R.id.days_container);
+
+
+            ArrayList<ArrayList<Event>> days = WeekManager.getEventPerDay(currentWeek);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            if (days != null) {
+                for (ArrayList<Event> day : days) {
+                    if (day != null) {
+
+
+
+                        /*Impossible de mettre un TextView entre deux fragments
+                        faut attendre qu'on passe au View pour décommenter les lignes ci-dessous.
+                         */
+
+                        /*
+                        int dayNumber = day.get(0).day;
+                        TextView titleDate = new TextView(getActivity());
+                        titleDate.setGravity(Gravity.CENTER_HORIZONTAL);
+                        titleDate.setTextSize(16);
+                        titleDate.setTypeface(null, Typeface.BOLD);
+                        titleDate.setText(formater.format(TimeUtils.createDateForDay(dayNumber, currentWeek)));
+                        daysContainer.addView(titleDate);*/
+                        for (Event e : day) {
+                            transaction.add(daysContainer.getId(), createEventFragment(getActivity(), e, currentWeek));
+                        }
+
+                    }
+                }
+                transaction.commit();
+
+            }
+
+            return root;
         }
     }
 
@@ -370,6 +417,17 @@ public class MainActivity extends AppCompatActivity
         Bundle bundle = new Bundle();
         bundle.putString(WeekFragment.BUNDLE_WEEK, new Gson().toJson(w, Week.class));
 
+        f.setArguments(bundle);
+
+        return f;
+    }
+
+    static Fragment createEventFragment(Context c, Event e, Week w){
+        Fragment f = Fragment.instantiate(c, EventFragment.class.getName());
+
+        Bundle bundle = new Bundle();
+        bundle.putString(EventFragment.BUNDLE_EVENT, new Gson().toJson(e, Event.class));
+        bundle.putString(EventFragment.BUNDLE_WEEK, new Gson().toJson(w, Week.class));
         f.setArguments(bundle);
 
         return f;

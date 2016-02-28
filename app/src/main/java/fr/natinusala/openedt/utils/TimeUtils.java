@@ -39,10 +39,7 @@ public class TimeUtils
         return isSameDay(cal1, cal2);
     }
 
-    public static SimpleDateFormat createDateFormat()
-    {
-        return new SimpleDateFormat("dd/MM/yyyy");
-    }
+    public static SimpleDateFormat createDateFormat() {return new SimpleDateFormat("dd/MM/yyyy");}
 
     public static int convertFormattedTimeToUnits(String time)
     {

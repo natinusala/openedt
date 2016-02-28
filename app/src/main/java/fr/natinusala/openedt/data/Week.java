@@ -18,6 +18,8 @@ package fr.natinusala.openedt.data;
 
 
 
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -69,4 +71,8 @@ public class Week
         return nextEvents;
 
     }
+
+
+
+
 }
