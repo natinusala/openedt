@@ -68,7 +68,7 @@ public class TimeUtils
 
 
     public static int getIdWeek(int trueWeekNumber){
-        return  ((52-34)+ trueWeekNumber % 53);
+        return  ((52-34)+ trueWeekNumber % 53) + 1;
     }
 
     public static int getNumberOfDay(int numberDayCalendar){

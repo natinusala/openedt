@@ -24,70 +24,33 @@ import com.getpebble.android.kit.*;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
 import java.util.UUID;
 import fr.natinusala.openedt.data.Week;
-import fr.natinusala.openedt.utils.TimeUtils;
+
 
 
 public class PebbleManager {
 
     private static UUID PEBBLE_APP_UUID = UUID.fromString("00f5db3f-43da-4229-9368-14aa35422398");
-    private Activity activity;
     private ArrayList<Week> weeksList;
-
+    private Activity acti;
     public PebbleManager(Activity act){
-        activity = act;
+        acti = act;
         PebbleKit.PebbleDataReceiver receiver = new PebbleKit.PebbleDataReceiver(PEBBLE_APP_UUID) {
-
             @SuppressLint("SetTextI18n")
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-                ArrayList<String> dataToSend = getNextEventPebble();
+                ArrayList<String> dataToSend = WeekManager.getNextEventsForPebble(weeksList);
                 PebbleDictionary msg = new PebbleDictionary();
                 msg.addString(0, dataToSend.get(0));
                 msg.addString(128, dataToSend.get(1));
                 msg.addString(256, dataToSend.get(2));
-                PebbleKit.sendDataToPebble(activity.getApplicationContext(), PEBBLE_APP_UUID, msg);
+                PebbleKit.sendDataToPebble(acti.getApplicationContext(), PEBBLE_APP_UUID, msg);
             }
         };
-        PebbleKit.registerReceivedDataHandler(activity.getApplicationContext(), receiver);
+        PebbleKit.registerReceivedDataHandler(act.getApplicationContext(), receiver);
     }
 
     public void setWeekList(ArrayList<Week> weeks){
         weeksList = weeks;
-    }
-
-    public ArrayList<String> getNextEventPebble(){
-        Calendar cal = Calendar.getInstance();
-        boolean found = false;
-        boolean weekend = false;
-        Iterator<Week> week = weeksList.iterator();
-        int weekID = TimeUtils.getIdWeek(cal.get(Calendar.WEEK_OF_YEAR));
-        if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) { weekend = true; }
-        Week w = null;
-        if(!weekend) {
-            while (week.hasNext() && !found) {
-                w = week.next();
-                if (w.id == weekID) {
-                    found = true;
-                }
-            }
-        }else{
-            while (week.hasNext() && !found) {
-                w = week.next();
-                if (w.id == weekID+1) {
-                    found = true;
-                }
-            }
-        }
-        ArrayList<String> currentEventList = null;
-        if(w != null) {
-             currentEventList = w.getNextModulePebble(weekend);
-            while (currentEventList.size() < 3) {
-                currentEventList.addAll(week.next().getNextModulePebble(true));
-            }
-        }
-        return currentEventList;
     }
 }

@@ -178,11 +178,12 @@ public class MainActivity extends AppCompatActivity
         protected Boolean doInBackground(Void... params)
         {
             ArrayList<Week> data = DataManager.getWeeksForGroup(MainActivity.this, selectedGroup);
-            pebbleManager.setWeekList(data);
+
             if (data != null)
             {
                 weeks = data;
                 adapter = new TabsAdapter(getSupportFragmentManager());
+                pebbleManager.setWeekList(data);
                 return true;
             }
             else
