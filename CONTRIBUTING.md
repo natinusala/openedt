@@ -12,7 +12,7 @@ Il y a cependant quelques règles à suivre !
   * Les classes du package `manager` doivent contenir le coeur des traitements des données de l'application, le tout centralisé dans les classes par des méthodes statiques, cela pour permettre d'y accéder depuis n'importe-où dans l'application
   * De la même manière, le package `utils` contient des classes utilitaires possédant aussi des méthodes statiques
   * Les activités doivent être dans le package `activity`
-  * Les noms de packages doivent être au singulier (`manager` et non pas `managers`)
+  * Les noms de packages doivent être au singulier (`manager` et non pas `managers`), sauf pour `utils` parce que les classes contiennent plusieurs méthodes utilitaires et que c'est moi qui décide
   * Les classes du package `data` contiennent les données manipulées par l'application. Ce sont des classes simples avec des attributs directement publics et/ou encapsulés
   * Le package `adapter` contient les classes et interfaces pour relier l'application aux différentes sources de données externes
  * Lorsque vous modifiez le code de quelqu'un ou que vous faites une refonte de fonctionnalités largement utilisées, il peut être pertinent de prévenir les personnes concernées dans la PR
