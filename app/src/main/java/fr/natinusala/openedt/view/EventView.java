@@ -12,8 +12,9 @@
  *    limitations under the License.
  */
 
-package fr.natinusala.openedt.fragment;
+package fr.natinusala.openedt.view;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -34,50 +37,52 @@ import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.utils.TimeUtils;
 import fr.natinusala.openedt.utils.UIUtils;
 
-public class EventFragment extends Fragment
+public class EventView extends LinearLayout
 {
-    public static final String BUNDLE_EVENT = "event";
-    public static final String BUNDLE_WEEK = "week";
+    TextView module;
+    TextView salle;
+    TextView professeurs;
+    TextView date;
+    TextView heure;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public EventView(Context c)
     {
-        //Event
-        Event event = new Gson().fromJson(getArguments().getString(BUNDLE_EVENT), Event.class);
-        Week week = new Gson().fromJson(getArguments().getString(BUNDLE_WEEK), Week.class);
+        super(c);
 
         //Layout
-        LinearLayout layout = new LinearLayout(getActivity());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layout.setLayoutParams(params);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setBackgroundColor(Color.WHITE);
+        this.setLayoutParams(params);
+        this.setOrientation(LinearLayout.VERTICAL);
+        this.setBackgroundColor(Color.WHITE);
 
-        TextView module = new TextView(getActivity());
-        module.setPadding(UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 8), UIUtils.dp(getActivity(), 25), UIUtils.dp(getActivity(), 8));
+        module = new TextView(c);
+        module.setPadding(UIUtils.dp(c, 16), UIUtils.dp(c, 8), UIUtils.dp(c, 25), UIUtils.dp(c, 8));
         module.setTextSize(28);
-        layout.addView(module);
+        this.addView(module);
 
-        TextView heure = new TextView(getActivity());
+        heure = new TextView(c);
         heure.setTextSize(16);
-        heure.setPadding(UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 16), 0);
+        heure.setPadding(UIUtils.dp(c, 16), UIUtils.dp(c, 16), UIUtils.dp(c, 16), 0);
         heure.setTypeface(null, Typeface.BOLD);
-        layout.addView(heure);
+        this.addView(heure);
 
-        TextView salle = new TextView(getActivity());
-        salle.setPadding(UIUtils.dp(getActivity(), 16), 0, UIUtils.dp(getActivity(), 16), 0);
+        salle = new TextView(c);
+        salle.setPadding(UIUtils.dp(c, 16), 0, UIUtils.dp(c, 16), 0);
         salle.setTextSize(16);
         salle.setTypeface(null, Typeface.BOLD);
-        layout.addView(salle);
+        this.addView(salle);
 
-        TextView professeurs = new TextView(getActivity());
-        professeurs.setPadding(UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 16), 0);
-        layout.addView(professeurs);
+        professeurs = new TextView(c);
+        professeurs.setPadding(UIUtils.dp(c, 16), UIUtils.dp(c, 16), UIUtils.dp(c, 16), 0);
+        this.addView(professeurs);
 
-        TextView date = new TextView(getActivity());
-        date.setPadding(UIUtils.dp(getActivity(), 16), 0, UIUtils.dp(getActivity(), 16), UIUtils.dp(getActivity(), 16));
-        layout.addView(date);
+        date = new TextView(c);
+        date.setPadding(UIUtils.dp(c, 16), 0, UIUtils.dp(c, 16), UIUtils.dp(c, 16));
+        this.addView(date);
+    }
 
+    public EventView setData(Event event, Week week)
+    {
         //Données
         Date dayDate = TimeUtils.createDateForDay(event.day, week);
         SimpleDateFormat sdf = TimeUtils.createDateFormat();
@@ -90,6 +95,6 @@ public class EventFragment extends Fragment
         module.setText(event.createCategoryModule());
         professeurs.setText(String.format("Avec %s", event.getPrettyStaff()));
 
-        return layout;
+        return this;
     }
 }

@@ -15,9 +15,9 @@
 package fr.natinusala.openedt.activity;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -25,13 +25,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,12 +40,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -55,13 +55,13 @@ import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
-import fr.natinusala.openedt.fragment.EventFragment;
 import fr.natinusala.openedt.manager.DataManager;
 import fr.natinusala.openedt.manager.GroupManager;
 import fr.natinusala.openedt.manager.PebbleManager;
 import fr.natinusala.openedt.manager.WeekManager;
 import fr.natinusala.openedt.utils.TimeUtils;
-import fr.natinusala.openedt.fragment.WeekFragment;
+import fr.natinusala.openedt.view.EventView;
+import fr.natinusala.openedt.view.WeekView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -341,40 +341,31 @@ public class MainActivity extends AppCompatActivity
             ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {
             }.getType());
             Week currentWeek = WeekManager.getCurrentWeek(weeks);
-           // Format formater = TimeUtils.createDateFormat();  Pas utilisé à décommenttez par la suite (voir en dessous).
+            Format formater = TimeUtils.createDateFormat();
 
             View root = inflater.inflate(R.layout.activity_main_days_fragment, container, false);
             LinearLayout daysContainer = (LinearLayout) root.findViewById(R.id.days_container);
 
 
             ArrayList<ArrayList<Event>> days = WeekManager.getEventPerDay(currentWeek);
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
             if (days != null) {
                 for (ArrayList<Event> day : days) {
                     if (day != null) {
 
-
-
-                        /*Impossible de mettre un TextView entre deux fragments
-                        faut attendre qu'on passe au View pour décommenter les lignes ci-dessous.
-                         */
-
-                        /*
                         int dayNumber = day.get(0).day;
                         TextView titleDate = new TextView(getActivity());
                         titleDate.setGravity(Gravity.CENTER_HORIZONTAL);
                         titleDate.setTextSize(16);
                         titleDate.setTypeface(null, Typeface.BOLD);
                         titleDate.setText(formater.format(TimeUtils.createDateForDay(dayNumber, currentWeek)));
-                        daysContainer.addView(titleDate);*/
+                        daysContainer.addView(titleDate);
+
                         for (Event e : day) {
-                            transaction.add(daysContainer.getId(), createEventFragment(getActivity(), e, currentWeek));
+                            daysContainer.addView(new EventView(getActivity()).setData(e, currentWeek));
                         }
 
                     }
                 }
-                transaction.commit();
-
             }
 
             return root;
@@ -397,39 +388,11 @@ public class MainActivity extends AppCompatActivity
             int weekCal = cal.get(Calendar.WEEK_OF_YEAR) + 1;
             int week = TimeUtils.getIdWeek(weekCal);
 
-            weeksContainer.setId(R.id.activity_main_weeks_container);
-
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-            transaction.add(weeksContainer.getId(), createWeekFragment(getActivity(), weeks.get(week-1)));
-            transaction.add(weeksContainer.getId(), createWeekFragment(getActivity(), weeks.get(week)));
-            transaction.add(weeksContainer.getId(), createWeekFragment(getActivity(), weeks.get(week+1)));
-            transaction.commit();
+            weeksContainer.addView(new WeekView(getActivity()).setData(weeks.get(week - 1)));
+            weeksContainer.addView(new WeekView(getActivity()).setData(weeks.get(week)));
+            weeksContainer.addView(new WeekView(getActivity()).setData(weeks.get(week + 1)));
 
             return root;
         }
-    }
-
-    static Fragment createWeekFragment(Context c, Week w)
-    {
-        Fragment f = Fragment.instantiate(c, WeekFragment.class.getName());
-
-        Bundle bundle = new Bundle();
-        bundle.putString(WeekFragment.BUNDLE_WEEK, new Gson().toJson(w, Week.class));
-
-        f.setArguments(bundle);
-
-        return f;
-    }
-
-    static Fragment createEventFragment(Context c, Event e, Week w){
-        Fragment f = Fragment.instantiate(c, EventFragment.class.getName());
-
-        Bundle bundle = new Bundle();
-        bundle.putString(EventFragment.BUNDLE_EVENT, new Gson().toJson(e, Event.class));
-        bundle.putString(EventFragment.BUNDLE_WEEK, new Gson().toJson(w, Week.class));
-        f.setArguments(bundle);
-
-        return f;
     }
 }

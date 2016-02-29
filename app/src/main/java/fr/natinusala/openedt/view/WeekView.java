@@ -14,29 +14,22 @@
  *    Contributors : natinusala, Maveist
  */
 
-package fr.natinusala.openedt.fragment;
+package fr.natinusala.openedt.view;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,44 +43,47 @@ import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.utils.TimeUtils;
 import fr.natinusala.openedt.utils.UIUtils;
 
-@SuppressLint("ViewConstructor")
-public class WeekFragment extends Fragment
+public class WeekView extends CardView
 {
-    private Week week;
+    Week week;
     Scale scale;
+    LinearLayout linearLayout;
+    Context c;
 
     ArrayList<RelativeLayout> daysLayouts = new ArrayList<>();
-
-    public static final String BUNDLE_WEEK = "week";
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    
+    public WeekView(Context c)
     {
-        //Données
-        week = new Gson().fromJson(getArguments().getString(BUNDLE_WEEK), Week.class);
+        super(c);
 
-        CardView root = new CardView(getActivity());
-        LinearLayout linearLayout = new LinearLayout(getActivity());
+        this.c = c;
+        linearLayout = new LinearLayout(c);
+        addView(linearLayout);
+    }
+
+    public WeekView setData(Week week)
+    {
+        this.week = week;
 
         scale = new Scale(week.maximumEndTimeUnits + Scale.START);
 
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-        int eventsPadding = UIUtils.dp(getActivity(), 5) + UIUtils.dp(getActivity(), 33);
-        int eventsWidth = UIUtils.getScreenWidth(getActivity()) - eventsPadding - UIUtils.dp(getActivity(), 5);
+        int eventsPadding = UIUtils.dp(c, 5) + UIUtils.dp(c, 33);
+        int eventsWidth = UIUtils.getScreenWidth(c) - eventsPadding - UIUtils.dp(c, 5);
 
         //Ajout des jours
         for (int i = 0; i < 7; i++)
         {
-            RelativeLayout dayLayout = new RelativeLayout(getActivity());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, UIUtils.dp(getActivity(), 40));
-            params.leftMargin = UIUtils.dp(getActivity(), 5);
-            params.topMargin = (i == 0) ? UIUtils.dp(getActivity(), 5) : 0;
-            params.bottomMargin = UIUtils.dp(getActivity(), 5);
-            params.rightMargin = UIUtils.dp(getActivity(), 5);
+            RelativeLayout dayLayout = new RelativeLayout(c);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, UIUtils.dp(c, 40));
+            params.leftMargin = UIUtils.dp(c, 5);
+            params.topMargin = (i == 0) ? UIUtils.dp(c, 5) : 0;
+            params.bottomMargin = UIUtils.dp(c, 5);
+            params.rightMargin = UIUtils.dp(c, 5);
             dayLayout.setLayoutParams(params);
 
-            DayFrame frame = new DayFrame(getActivity(), TimeUtils.createDateForDay(i, week));
+            DayFrame frame = new DayFrame(c, TimeUtils.createDateForDay(i, week));
             dayLayout.addView(frame);
 
             if (i == 5 || i == 6)
@@ -102,7 +98,7 @@ public class WeekFragment extends Fragment
         //Ajout des events
         for (Event e : week.events)
         {
-            EventFrame frame = new EventFrame(getActivity(), e);
+            EventFrame frame = new EventFrame(c, e);
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(scale.scalify(e.durationUnits, eventsWidth), RelativeLayout.LayoutParams.MATCH_PARENT);
             params.leftMargin = eventsPadding + scale.scalify(e.startTimeUnits, eventsWidth);
@@ -117,57 +113,34 @@ public class WeekFragment extends Fragment
             daysLayouts.get(e.day).addView(frame);
         }
 
-        root.addView(linearLayout);
-        return root;
+        return this;
     }
 
-    public static class EventDialog extends AppCompatDialogFragment
+    public static class EventDialog extends AlertDialog
     {
-        public static final String BUNDLE_EVENT = "event";
-        public static final String BUNDLE_WEEK = "week";
-
-        LinearLayout layout;
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public EventDialog(Context context, Event event, Week week)
         {
-            //Layout
-            layout = new LinearLayout(getActivity());
-            layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            layout.setId(R.id.event_fragment_layout_id);
+            super(context);
 
-            //Data
-            Event event = new Gson().fromJson(getArguments().getString(EventDialog.BUNDLE_EVENT), Event.class);
-            Week week = new Gson().fromJson(getArguments().getString(EventDialog.BUNDLE_WEEK), Week.class);
+            //Animation et position
+            getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
-            Gson gson = new Gson();
-            Bundle bundle = new Bundle();
-            bundle.putString(EventFragment.BUNDLE_EVENT, gson.toJson(event, Event.class));
-            bundle.putString(EventFragment.BUNDLE_WEEK, gson.toJson(week, Week.class));
-
-            Fragment fragment = Fragment.instantiate(getActivity(), EventFragment.class.getName());
-            fragment.setArguments(bundle);
-
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.add(layout.getId(), fragment);
-            transaction.commit();
-
-            //Animation and position
-            getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
-            WindowManager.LayoutParams wmlp = getDialog().getWindow().getAttributes();
+            WindowManager.LayoutParams wmlp = getWindow().getAttributes();
             wmlp.gravity = Gravity.BOTTOM;
-            wmlp.y = UIUtils.dp(getActivity(), 16);
+            wmlp.y = UIUtils.dp(context, 16);
 
-            return layout;
-        }
+            //Buttons
+            this.setButton(AlertDialog.BUTTON_NEUTRAL, "Fermer", new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dismiss();
+                }
+            });
 
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState)
-        {
-            Dialog dialog = super.onCreateDialog(savedInstanceState);
-            setStyle(AppCompatDialogFragment.STYLE_NO_TITLE, 0);
-            return dialog;
+            //Layout
+            EventView eventView = new EventView(context);
+            eventView.setData(event, week);
+            setView(eventView);
         }
 
     }
@@ -175,7 +148,7 @@ public class WeekFragment extends Fragment
     class EventFrame extends Button
     {
         public Event event;
-        public EventFrame(Context c, final Event e)
+        public EventFrame(final Context c, final Event e)
         {
             super(c);
             this.event = e;
@@ -186,19 +159,14 @@ public class WeekFragment extends Fragment
             this.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EventDialog dialog = new EventDialog();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(EventDialog.BUNDLE_EVENT, new Gson().toJson(event, Event.class));
-                    bundle.putString(EventDialog.BUNDLE_WEEK, new Gson().toJson(week, Week.class));
-                    dialog.setArguments(bundle);
-                    dialog.show(getChildFragmentManager(), "dialog");
+                    new EventDialog(c, event, week).show();
                 }
             });
 
             setText(e.createCategoryModule());
             setTypeface(null, Typeface.NORMAL);
             setTextSize(8);
-            setPadding(UIUtils.dp(getActivity(), 1), UIUtils.dp(getActivity(), 1), UIUtils.dp(getActivity(), 1), UIUtils.dp(getActivity(), 1));
+            setPadding(UIUtils.dp(c, 1), UIUtils.dp(c, 1), UIUtils.dp(c, 1), UIUtils.dp(c, 1));
             setTransformationMethod(null);
         }
     }
@@ -211,7 +179,7 @@ public class WeekFragment extends Fragment
             super(c);
             this.setOrientation(VERTICAL);
 
-            LayoutParams params = new LayoutParams(UIUtils.dp(getActivity(), 33), LayoutParams.MATCH_PARENT);
+            LayoutParams params = new LayoutParams(UIUtils.dp(c, 33), LayoutParams.MATCH_PARENT);
             this.setLayoutParams(params);
 
             this.setGravity(Gravity.CENTER);
