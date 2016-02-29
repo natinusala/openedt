@@ -31,6 +31,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     @Bind(R.id.main_pager) ViewPager viewPager;
     @Bind(R.id.main_root) DrawerLayout drawer;
     @Bind(R.id.main_progressBar) ProgressBar progressBar;
+
     PebbleManager pebbleManager;
 
     ArrayList<Group> groups;
@@ -236,7 +239,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -273,6 +275,17 @@ public class MainActivity extends AppCompatActivity
         else if (item.getItemId() == R.id.add_group)
         {
             this.startActivity(new Intent(this, AddGroupActivity.class));
+        }
+        else if (item.getItemId() == R.id.about)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("A propos d'OpenEDT");
+            builder.setIcon(R.mipmap.ic_launcher);
+            builder.setMessage(Html.fromHtml("OpenEDT est une application libre de consultation des emplois du temps universitaires.<br><br>L'application est distribuée sous la licence libre <a href='http://www.apache.org/licenses/LICENSE-2.0'>Apache 2.0</a>.<br><br>Participez au projet depuis notre <a href='https://github.com/natinusala/openedt'>dépôt GitHub</a> !"));
+            builder.setNeutralButton("Fermer", null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            ((TextView) dialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         drawer.closeDrawer(GravityCompat.START);
