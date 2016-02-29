@@ -19,6 +19,7 @@ package fr.natinusala.openedt.utils;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import fr.natinusala.openedt.data.Scale;
 import fr.natinusala.openedt.data.Week;
@@ -40,6 +41,8 @@ public class TimeUtils
     }
 
     public static SimpleDateFormat createDateFormat() {return new SimpleDateFormat("dd/MM/yyyy");}
+
+    public static SimpleDateFormat createLongDateFormat() {return new SimpleDateFormat("EEEE d MMMM", Locale.FRANCE);} //lundi 10 février
 
     public static int convertFormattedTimeToUnits(String time)
     {

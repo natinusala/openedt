@@ -30,6 +30,7 @@ dependencies {
     compile files('libs/jsoup-1.8.3.jar')
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'org.apache.commons:commons-lang3:3.4'
 }
 
 repositories {
