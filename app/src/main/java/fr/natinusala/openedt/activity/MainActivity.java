@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity
     Group selectedGroup;
     ArrayList<Week> weeks;
 
+    TabsAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,13 +180,15 @@ public class MainActivity extends AppCompatActivity
 
     class Task extends AsyncTask<Void, Void, Boolean>
     {
-        TabsAdapter adapter;
+
 
         @Override
         protected void onPreExecute()
         {
             viewPager.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
+
+            viewPager.setAdapter(null);
         }
 
         @Override
@@ -194,9 +198,7 @@ public class MainActivity extends AppCompatActivity
 
             if (data != null)
             {
-                weeks = data;
-                adapter = new TabsAdapter(getSupportFragmentManager());
-                pebbleManager.setWeekList(data);
+                weeks = new ArrayList<>(data);
                 return true;
             }
             else
@@ -211,7 +213,10 @@ public class MainActivity extends AppCompatActivity
             if (result)
             {
                 //Affichage des données
+                adapter = new TabsAdapter(getSupportFragmentManager());
                 viewPager.setAdapter(adapter);
+
+                pebbleManager.setWeekList(weeks);
 
                 viewPager.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
@@ -300,6 +305,15 @@ public class MainActivity extends AppCompatActivity
     {
         public TabsAdapter(FragmentManager fm) {
             super(fm);
+
+            if (fm.getFragments() != null) {
+                fm.getFragments().clear();
+            }
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
