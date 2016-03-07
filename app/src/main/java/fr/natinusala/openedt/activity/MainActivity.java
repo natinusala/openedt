@@ -17,6 +17,7 @@ package fr.natinusala.openedt.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -40,6 +42,8 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,6 +53,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.lang.reflect.Array;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,6 +74,8 @@ import fr.natinusala.openedt.utils.TimeUtils;
 import fr.natinusala.openedt.utils.UIUtils;
 import fr.natinusala.openedt.view.EventView;
 import fr.natinusala.openedt.view.WeekView;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -378,7 +385,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static class DaysFragment extends Fragment {
-        @Bind(R.id.days_container) LinearLayout daysContainer;
+        @Bind(R.id.days_list) StickyListHeadersListView list;
 
         public static final String BUNDLE_WEEKS = "weeks";
 
@@ -387,41 +394,102 @@ public class MainActivity extends AppCompatActivity
             ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {
             }.getType());
             Week currentWeek = WeekManager.getCurrentWeek(weeks);
-            Format formater = TimeUtils.createDateFormat();
 
             View root = inflater.inflate(R.layout.activity_main_days_fragment, container, false);
 
             ButterKnife.bind(this, root);
 
-            ArrayList<ArrayList<Event>> days = WeekManager.getEventPerDay(currentWeek);
-            if (days != null) {
-                for (ArrayList<Event> day : days) {
-                    if (day != null) {
+            list.setAdapter(new DaysAdapter(currentWeek));
+            list.setDivider(null);
+            list.setDividerHeight(0);
 
-                        int dayNumber = day.get(0).day;
-                        TextView titleDate = new TextView(getActivity());
-                        titleDate.setGravity(Gravity.CENTER_HORIZONTAL);
-                        titleDate.setTextSize(16);
-                        titleDate.setTypeface(null, Typeface.BOLD);
-                        titleDate.setText(formater.format(TimeUtils.createDateForDay(dayNumber, currentWeek)));
-                        daysContainer.addView(titleDate);
+            return root;
+        }
 
-                        for (Event e : day) {
-                            EventView eventView = new EventView(getActivity()).setData(e, currentWeek);
-                            android.support.v7.widget.CardView card = new android.support.v7.widget.CardView(getContext());
-                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            int margin = UIUtils.dp(getContext(), 10);
-                            params.setMargins(margin*2, margin, margin*2, margin);
-                            card.setLayoutParams(params);
-                            card.addView(eventView);
-                            daysContainer.addView(card);
+        class DaysAdapter extends BaseAdapter implements StickyListHeadersAdapter
+        {
+            ArrayList<Event> events;
+            ArrayList<Integer> headersId;
+
+            Week currentWeek;
+
+            Format formater = TimeUtils.createLongDateFormat();
+
+            public DaysAdapter(Week currentWeek)
+            {
+                this.events = new ArrayList<>();
+                this.headersId = new ArrayList<>();
+                this.currentWeek = currentWeek;
+
+                ArrayList<ArrayList<Event>> eventsPerDay = WeekManager.getEventPerDay(currentWeek);
+
+                if (eventsPerDay != null)
+                {
+                    int currentHeaderId = 0;
+                    for (ArrayList<Event> day : eventsPerDay)
+                    {
+                        for (Event e : day)
+                        {
+                            events.add(e);
+                            headersId.add(currentHeaderId);
                         }
-
+                        currentHeaderId++;
                     }
                 }
             }
 
-            return root;
+            @Override
+            public View getHeaderView(int position, View convertView, ViewGroup parent) {
+                TextView titleDate = new TextView(getActivity());
+                titleDate.setGravity(Gravity.CENTER_HORIZONTAL);
+                titleDate.setTextSize(16);
+                titleDate.setTypeface(titleDate.getTypeface(), Typeface.BOLD);
+                int padding = UIUtils.dp(getActivity(), 10);
+                titleDate.setPadding(0, padding, 0, padding);
+                titleDate.setBackgroundColor(Color.parseColor("#689F38"));
+                titleDate.setTextColor(Color.WHITE);
+                titleDate.setText(formater.format(TimeUtils.createDateForDay(events.get(position).day, currentWeek)).toUpperCase());
+                return titleDate;
+            }
+
+            @Override
+            public long getHeaderId(int position) {
+                return headersId.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return events.size();
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return events.get(position);
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return 0;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
+                EventView eventView = new EventView(getActivity(), true).setData(events.get(position), currentWeek);
+                android.support.v7.widget.CardView card = new android.support.v7.widget.CardView(getContext());
+                card.addView(eventView);
+
+                LinearLayout layout = new LinearLayout(getActivity());
+                layout.setOrientation(LinearLayout.VERTICAL);
+                layout.addView(card);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                int margin = UIUtils.dp(getActivity(), 10);
+                params.setMargins(margin * 2, margin, margin * 2, margin);
+                card.setLayoutParams(params);
+
+                return layout;
+            }
         }
     }
 

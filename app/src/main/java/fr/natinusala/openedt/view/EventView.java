@@ -47,7 +47,14 @@ public class EventView extends LinearLayout
 
     public EventView(Context c)
     {
+        this(c, false);
+    }
+
+    public EventView(Context c, boolean condensed)
+    {
         super(c);
+
+        int padding = UIUtils.dp(c, condensed ? 10 : 16);
 
         //Layout
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -56,29 +63,38 @@ public class EventView extends LinearLayout
         this.setBackgroundColor(Color.WHITE);
 
         module = new TextView(c);
-        module.setPadding(UIUtils.dp(c, 16), UIUtils.dp(c, 8), UIUtils.dp(c, 25), UIUtils.dp(c, 8));
+        module.setPadding(padding, padding/2, UIUtils.dp(c, 25), padding/2);
         module.setTextSize(28);
         this.addView(module);
 
         heure = new TextView(c);
         heure.setTextSize(16);
-        heure.setPadding(UIUtils.dp(c, 16), UIUtils.dp(c, 16), UIUtils.dp(c, 16), 0);
+        heure.setPadding(padding, padding, padding, 0);
         heure.setTypeface(null, Typeface.BOLD);
         this.addView(heure);
 
         salle = new TextView(c);
-        salle.setPadding(UIUtils.dp(c, 16), 0, UIUtils.dp(c, 16), 0);
+        salle.setPadding(padding, 0, padding, 0);
         salle.setTextSize(16);
         salle.setTypeface(null, Typeface.BOLD);
         this.addView(salle);
 
         professeurs = new TextView(c);
-        professeurs.setPadding(UIUtils.dp(c, 16), UIUtils.dp(c, 16), UIUtils.dp(c, 16), 0);
+        professeurs.setPadding(padding, padding, padding, 0);
         this.addView(professeurs);
 
         date = new TextView(c);
-        date.setPadding(UIUtils.dp(c, 16), 0, UIUtils.dp(c, 16), UIUtils.dp(c, 16));
-        this.addView(date);
+        date.setPadding(padding, 0, padding, 0);
+
+        if (condensed)
+        {
+            professeurs.setPadding(padding, 0, padding, padding);
+        }
+        else
+        {
+            this.addView(date);
+        }
+
     }
 
     public EventView setData(Event event, Week week)

@@ -31,6 +31,7 @@ dependencies {
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
 }
 
 repositories {
