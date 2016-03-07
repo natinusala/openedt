@@ -20,6 +20,15 @@ public class Group {
     public DataSourceType dataSourceType;
     public Component component;
 
+    public Group(){}
+
+    public Group(String name, String dataSource, DataSourceType dataSourceType, Component component) {
+        this.name = name;
+        this.dataSource = dataSource;
+        this.dataSourceType = dataSourceType;
+        this.component = component;
+    }
+
     public Group setName(String name)
     {
         this.name = name;

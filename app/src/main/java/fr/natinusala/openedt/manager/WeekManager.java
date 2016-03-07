@@ -33,7 +33,8 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class WeekManager {
 
 
-    public static ArrayList<Event> getNextEvents(ArrayList<Week> weeks){
+    public static ArrayList<Event> getNextEvents(ArrayList<Week> weeks)
+    {
         Calendar cal = Calendar.getInstance();
         boolean found = false;
         boolean weekend = false;
@@ -87,6 +88,7 @@ public class WeekManager {
     }
 
     //Transforme la liste des events par semaine en liste des events par jour
+    //TODO Fixer la méthode
     public static ArrayList<ArrayList<Event>> getEventPerDay(Week week){
         ArrayList<ArrayList<Event>> days = new ArrayList<>();
         ArrayList<Event> events = new ArrayList<>();

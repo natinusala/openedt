@@ -40,7 +40,15 @@
             <activity
                 android:name=".activity.AddGroupActivity"
                 android:label="@string/title_activity_add_group"
-                android:theme="@style/AppTheme.NoActionBar"></activity>
+                android:theme="@style/AppTheme.NoActionBar"/>
+
+            <receiver android:name=".widget.WidgetProvider" >
+                <intent-filter>
+                    <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                </intent-filter>
+                <meta-data android:name="android.appwidget.provider"
+                    android:resource="@xml/widget_provider_info" />
+            </receiver>
     </application>
 
 </manifest>
