@@ -66,6 +66,7 @@ import fr.natinusala.openedt.manager.GroupManager;
 import fr.natinusala.openedt.manager.PebbleManager;
 import fr.natinusala.openedt.manager.WeekManager;
 import fr.natinusala.openedt.utils.TimeUtils;
+import fr.natinusala.openedt.utils.UIUtils;
 import fr.natinusala.openedt.view.EventView;
 import fr.natinusala.openedt.view.WeekView;
 
@@ -406,7 +407,14 @@ public class MainActivity extends AppCompatActivity
                         daysContainer.addView(titleDate);
 
                         for (Event e : day) {
-                            daysContainer.addView(new EventView(getActivity()).setData(e, currentWeek));
+                            EventView eventView = new EventView(getActivity()).setData(e, currentWeek);
+                            android.support.v7.widget.CardView card = new android.support.v7.widget.CardView(getContext());
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            int margin = UIUtils.dp(getContext(), 10);
+                            params.setMargins(margin*2, margin, margin*2, margin);
+                            card.setLayoutParams(params);
+                            card.addView(eventView);
+                            daysContainer.addView(card);
                         }
 
                     }
