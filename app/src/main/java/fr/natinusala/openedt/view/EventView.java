@@ -17,17 +17,8 @@ package fr.natinusala.openedt.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -84,7 +75,7 @@ public class EventView extends LinearLayout
         this.addView(professeurs);
 
         date = new TextView(c);
-        date.setPadding(padding, 0, padding, 0);
+        date.setPadding(padding, 0, padding, padding);
 
         if (condensed)
         {

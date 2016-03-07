@@ -327,18 +327,16 @@ public class MainActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position)
         {
+            Bundle bundle = new Bundle();
+            bundle.putString(WeeksFragment.BUNDLE_WEEKS, new Gson().toJson(weeks, new TypeToken<ArrayList<Week>>(){}.getType()));
             switch (position)
             {
                 case 0:
-                    return Fragment.instantiate(MainActivity.this, HomeFragment.class.getName());
+                    return Fragment.instantiate(MainActivity.this, HomeFragment.class.getName(), bundle);
                 case 1:
-                    Bundle bundle1 = new Bundle();
-                    bundle1.putString(WeeksFragment.BUNDLE_WEEKS, new Gson().toJson(weeks, new TypeToken<ArrayList<Week>>(){}.getType()));
-                    return Fragment.instantiate(MainActivity.this, DaysFragment.class.getName(), bundle1);
+                    return Fragment.instantiate(MainActivity.this, DaysFragment.class.getName(), bundle);
                 case 2:
-                    Bundle bundle2 = new Bundle();
-                    bundle2.putString(WeeksFragment.BUNDLE_WEEKS, new Gson().toJson(weeks, new TypeToken<ArrayList<Week>>(){}.getType()));
-                    return Fragment.instantiate(MainActivity.this, WeeksFragment.class.getName(), bundle2);
+                    return Fragment.instantiate(MainActivity.this, WeeksFragment.class.getName(), bundle);
             }
 
             return new Fragment();
@@ -368,9 +366,16 @@ public class MainActivity extends AppCompatActivity
         @Bind(R.id.home_week) TextView week;
         @Bind(R.id.home_date) TextView date;
 
+        @Bind(R.id.home_container) LinearLayout daysContainer;
+
+        public static final String BUNDLE_WEEKS = "weeks";
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+            ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {}.getType());
+            Week currentWeek = WeekManager.getCurrentWeek(weeks);
+
             View view = inflater.inflate(R.layout.activity_main_home_fragment, container, false);
             ButterKnife.bind(this, view);
 
@@ -379,6 +384,24 @@ public class MainActivity extends AppCompatActivity
 
             date.setText(WordUtils.capitalize(format.format(new Date())));
             week.setText("Semaine " + cal.get(Calendar.WEEK_OF_YEAR));
+
+            ArrayList<Event> events = WeekManager.getNextEvents(weeks);
+
+            for (Event e : events)
+            {
+                CardView card = new CardView(getContext());
+
+                EventView eventView = new EventView(getContext());
+
+                eventView.setData(e, currentWeek);
+                card.addView(eventView);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(UIUtils.dp(getContext(), 20), UIUtils.dp(getContext(), 10), UIUtils.dp(getContext(), 20), UIUtils.dp(getContext(), 10));
+                card.setLayoutParams(params);
+
+                daysContainer.addView(card);
+            }
 
             return view;
         }
@@ -391,8 +414,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {
-            }.getType());
+            ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {}.getType());
             Week currentWeek = WeekManager.getCurrentWeek(weeks);
 
             View root = inflater.inflate(R.layout.activity_main_days_fragment, container, false);
