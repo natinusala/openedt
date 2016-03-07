@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/widget_hour"
         android:paddingLeft="8dp"
-        android:paddingTop="8dp"
+        android:paddingTop="5dp"
         android:paddingRight="8dp"
         android:textColor="#757575"
         android:textSize="16dp"

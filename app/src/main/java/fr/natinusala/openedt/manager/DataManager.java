@@ -55,6 +55,7 @@ public class DataManager
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             //Depuis internet ça n'a pas marché, on le récupère depuis la sauvegarde
 
             //Si on l'a de sauvegardé

@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.widget.RemoteViews;
 
 import java.text.SimpleDateFormat;
@@ -23,15 +24,43 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class WidgetProvider extends AppWidgetProvider
 {
     //TODO Configuration du groupe et de l'intervalle
-    //TODO Pouvoir charger depuis Internet
+    //TODO Gérer les erreurs de chargement
 
     @Override
     public void onUpdate (Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
     {
         for (int wId : appWidgetIds)
         {
-            Group group = new Group("INFO 2 Groupe 2", "https://edt.univ-nantes.fr/iut_nantes/g3179.html", DataSourceType.CELCAT, Component.IUT_NANTES);
-            ArrayList<Week> weeks = DataManager.getWeeksForGroup(context, group);
+            Group group = new Group("INFO 2 Groupe 2", "https://edt.univ-nantes.fr/iut_nantes/g3179.xml", DataSourceType.CELCAT, Component.IUT_NANTES);
+            new Task(group, context, appWidgetManager, wId).execute();
+        }
+    }
+
+    class Task extends AsyncTask<Void, Void, Void>
+    {
+        ArrayList<Week> weeks;
+        Context context;
+        AppWidgetManager appWidgetManager;
+        int wId;
+        Group group;
+
+        public Task(Group g, Context c, AppWidgetManager manager, int wid)
+        {
+            this.group = g;
+            this.context = c;
+            this.appWidgetManager = manager;
+            this.wId = wid;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            weeks = DataManager.getWeeksForGroup(context, group);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void param)
+        {
             Week week = WeekManager.getCurrentWeek(weeks);
             Event event = WeekManager.getEventPerDay(week).get(0).get(0);
 
