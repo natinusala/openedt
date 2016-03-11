@@ -66,6 +66,7 @@ import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.data.WrapperEventWeek;
 import fr.natinusala.openedt.manager.DataManager;
 import fr.natinusala.openedt.manager.GroupManager;
 import fr.natinusala.openedt.manager.PebbleManager;
@@ -385,15 +386,15 @@ public class MainActivity extends AppCompatActivity
             date.setText(WordUtils.capitalize(format.format(new Date())));
             week.setText("Semaine " + cal.get(Calendar.WEEK_OF_YEAR));
 
-            Map<Event, Week> events = WeekManager.getNextEvents(weeks);
+            ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weeks);
 
-            for (Event e : events.keySet())
+            for (WrapperEventWeek wrap : wrappers)
             {
                 CardView card = new CardView(getContext());
 
                 EventView eventView = new EventView(getContext());
 
-                eventView.setData(e, events.get(e));
+                eventView.setData(wrap.getEvent(), wrap.getWeek());
                 card.addView(eventView);
 
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

@@ -19,6 +19,7 @@ import fr.natinusala.openedt.data.DataSourceType;
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.data.WrapperEventWeek;
 import fr.natinusala.openedt.manager.DataManager;
 import fr.natinusala.openedt.manager.WeekManager;
 import fr.natinusala.openedt.utils.TimeUtils;
@@ -66,10 +67,9 @@ public class WidgetProvider extends AppWidgetProvider
             if (weeks != null)
             {
 
-                Map<Event, Week> eventWeek = WeekManager.getNextEvents(weeks);
-                Object[] events = eventWeek.keySet().toArray();
-                Event event = (Event) events[0];
-                Week week = eventWeek.get(event);
+                ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weeks);
+                Event event = wrappers.get(0).getEvent();
+                Week week = wrappers.get(0).getWeek();
                 if (event != null)
                 {
                     Date dayDate = TimeUtils.createDateForDay(event.day, week);

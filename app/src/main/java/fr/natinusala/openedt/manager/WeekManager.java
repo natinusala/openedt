@@ -28,6 +28,7 @@ import java.util.Map;
 
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.data.WrapperEventWeek;
 import fr.natinusala.openedt.utils.TimeUtils;
 
 /**
@@ -36,7 +37,7 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class WeekManager {
 
 
-    public static Map<Event, Week> getNextEvents(ArrayList<Week> weeks)
+    public static ArrayList<WrapperEventWeek> getNextEvents(ArrayList<Week> weeks)
     {
         Calendar cal = Calendar.getInstance();
         boolean found = false;
@@ -60,11 +61,11 @@ public class WeekManager {
                 }
             }
         }
-        Map<Event, Week> currentEventList = null;
+       ArrayList<WrapperEventWeek> currentEventList = null;
         if(w != null) {
             currentEventList = w.getNextEvents(weekend);
             while (week.hasNext() && currentEventList.size() < 3) {
-                currentEventList.putAll(week.next().getNextEvents(true));
+                currentEventList.addAll(week.next().getNextEvents(true));
             }
         }
 
@@ -72,10 +73,10 @@ public class WeekManager {
     }
 
     public static ArrayList<String> getNextEventsForPebble(ArrayList<Week> weekArray){
-        Map<Event, Week> events = WeekManager.getNextEvents(weekArray);
+        ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weekArray);
         ArrayList<String> strToReturn = new ArrayList<>();
-        for(Event event : events.keySet()){
-            strToReturn.add(event.toPebbleString());
+        for(WrapperEventWeek wrap : wrappers){
+            strToReturn.add(wrap.getEvent().toPebbleString());
         }
         return strToReturn;
     }
