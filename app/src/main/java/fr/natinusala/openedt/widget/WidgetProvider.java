@@ -11,6 +11,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
@@ -64,9 +65,11 @@ public class WidgetProvider extends AppWidgetProvider
 
             if (weeks != null)
             {
-                Week week = WeekManager.getCurrentWeek(weeks);
-                Event event = WeekManager.getEventPerDay(week).get(0).get(0);
 
+                Map<Event, Week> eventWeek = WeekManager.getNextEvents(weeks);
+                Object[] events = eventWeek.keySet().toArray();
+                Event event = (Event) events[0];
+                Week week = eventWeek.get(event);
                 if (event != null)
                 {
                     Date dayDate = TimeUtils.createDateForDay(event.day, week);
