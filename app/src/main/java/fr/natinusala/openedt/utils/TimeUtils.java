@@ -72,7 +72,7 @@ public class TimeUtils
     }
 
     public static int getNumberOfDay(int numberDayCalendar){
-        return (numberDayCalendar + 4 ) % 7;
+        return (numberDayCalendar + 8 ) % 7;
 
     }
 
@@ -92,5 +92,9 @@ public class TimeUtils
 
         return c.getTime();
     }
+
+    /*public static int dayCalendarToDayCelcat(int dayCal){
+        return (dayCal+8)%7;
+    }*/
 
 }

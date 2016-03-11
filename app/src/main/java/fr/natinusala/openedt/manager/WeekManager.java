@@ -19,9 +19,12 @@ package fr.natinusala.openedt.manager;
 
 
 
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Map;
 
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Week;
@@ -33,7 +36,7 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class WeekManager {
 
 
-    public static ArrayList<Event> getNextEvents(ArrayList<Week> weeks)
+    public static Map<Event, Week> getNextEvents(ArrayList<Week> weeks)
     {
         Calendar cal = Calendar.getInstance();
         boolean found = false;
@@ -57,20 +60,21 @@ public class WeekManager {
                 }
             }
         }
-        ArrayList<Event> currentEventList = null;
+        Map<Event, Week> currentEventList = null;
         if(w != null) {
             currentEventList = w.getNextEvents(weekend);
-            while (currentEventList.size() < 3) {
-                currentEventList.addAll(week.next().getNextEvents(true));
+            while (week.hasNext() && currentEventList.size() < 3) {
+                currentEventList.putAll(week.next().getNextEvents(true));
             }
         }
+
         return currentEventList;
     }
 
     public static ArrayList<String> getNextEventsForPebble(ArrayList<Week> weekArray){
-        ArrayList<Event> events = WeekManager.getNextEvents(weekArray);
+        Map<Event, Week> events = WeekManager.getNextEvents(weekArray);
         ArrayList<String> strToReturn = new ArrayList<>();
-        for(Event event : events){
+        for(Event event : events.keySet()){
             strToReturn.add(event.toPebbleString());
         }
         return strToReturn;
@@ -88,7 +92,6 @@ public class WeekManager {
     }
 
     //Transforme la liste des events par semaine en liste des events par jour
-    //TODO Fixer la méthode
     public static ArrayList<ArrayList<Event>> getEventPerDay(Week week){
         ArrayList<ArrayList<Event>> days = new ArrayList<>();
         ArrayList<Event> events = new ArrayList<>();

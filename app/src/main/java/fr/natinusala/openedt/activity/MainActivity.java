@@ -42,7 +42,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -53,12 +52,13 @@ import com.google.gson.reflect.TypeToken;
 
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.lang.reflect.Array;
+
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {}.getType());
-            Week currentWeek = WeekManager.getCurrentWeek(weeks);
+
 
             View view = inflater.inflate(R.layout.activity_main_home_fragment, container, false);
             ButterKnife.bind(this, view);
@@ -385,15 +385,15 @@ public class MainActivity extends AppCompatActivity
             date.setText(WordUtils.capitalize(format.format(new Date())));
             week.setText("Semaine " + cal.get(Calendar.WEEK_OF_YEAR));
 
-            ArrayList<Event> events = WeekManager.getNextEvents(weeks);
+            Map<Event, Week> events = WeekManager.getNextEvents(weeks);
 
-            for (Event e : events)
+            for (Event e : events.keySet())
             {
                 CardView card = new CardView(getContext());
 
                 EventView eventView = new EventView(getContext());
 
-                eventView.setData(e, currentWeek);
+                eventView.setData(e, events.get(e));
                 card.addView(eventView);
 
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
