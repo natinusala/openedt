@@ -2,3 +2,4 @@ Voici la liste des contributeurs du projet. Si vous avez participé (via des PR)
 
  * natinusala
  * maveist
+ * austil
