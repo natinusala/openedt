@@ -64,7 +64,6 @@ public class WidgetProvider extends AppWidgetProvider
         protected void onPostExecute(ArrayList<Week> weeks)
         {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-
             if (weeks != null)
             {
 
@@ -83,6 +82,7 @@ public class WidgetProvider extends AppWidgetProvider
                     views.setTextViewText(R.id.widget_module, event.createCategoryModule());
                     views.setTextViewText(R.id.widget_staff, String.format("Avec %s", event.getPrettyStaff()));
                     views.setTextViewText(R.id.widget_group, group.name + " - prochain cours :");
+
                 }
             }
             else

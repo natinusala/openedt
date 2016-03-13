@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity
                 titleDate.setTypeface(titleDate.getTypeface(), Typeface.BOLD);
                 int padding = UIUtils.dp(getActivity(), 10);
                 titleDate.setPadding(0, padding, 0, padding);
-                titleDate.setBackgroundColor(Color.parseColor("#33B5E5"));
+                titleDate.setBackgroundColor(Color.parseColor("#0487B9"));
                 titleDate.setTextColor(Color.WHITE);
                 titleDate.setText(formater.format(TimeUtils.createDateForDay(events.get(position).day, currentWeek)).toUpperCase());
                 return titleDate;
