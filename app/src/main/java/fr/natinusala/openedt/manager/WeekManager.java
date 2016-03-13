@@ -24,7 +24,7 @@ package fr.natinusala.openedt.manager;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.Map;
+
 
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Week;
@@ -84,6 +84,8 @@ public class WeekManager {
     public static Week getCurrentWeek(ArrayList<Week> weeks){
         Calendar cal = Calendar.getInstance();
         int weekID = TimeUtils.getIdWeek(cal.get(Calendar.WEEK_OF_YEAR));
+        int today = cal.get(Calendar.DAY_OF_WEEK);
+        if(today == Calendar.SUNDAY || today == Calendar.SATURDAY){ weekID++; }
         for(Week w : weeks){
             if(w.id == weekID){
                 return w;

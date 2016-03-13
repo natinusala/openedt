@@ -21,6 +21,7 @@ import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.data.WrapperEventWeek;
 import fr.natinusala.openedt.manager.DataManager;
+import fr.natinusala.openedt.manager.GroupManager;
 import fr.natinusala.openedt.manager.WeekManager;
 import fr.natinusala.openedt.utils.TimeUtils;
 
@@ -34,7 +35,7 @@ public class WidgetProvider extends AppWidgetProvider
     {
         for (int wId : appWidgetIds)
         {
-            Group group = new Group("INFO 2 Groupe 2", "https://edt.univ-nantes.fr/iut_nantes/g3179.xml", DataSourceType.CELCAT, Component.IUT_NANTES);
+            Group group = GroupManager.getSelectedGroup(context);
             new Task(group, context, appWidgetManager, wId).execute();
         }
     }
