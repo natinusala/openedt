@@ -29,6 +29,7 @@ public class WidgetProvider extends AppWidgetProvider
 {
     //TODO Configuration du groupe et de l'intervalle
     //TODO Actualiser au toucher
+    //TODO Améliorer la taille par défaut (widget_provider_info.xml) - le système de cellules/dp est naze
 
     @Override
     public void onUpdate (Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
@@ -87,8 +88,6 @@ public class WidgetProvider extends AppWidgetProvider
             {
                 views = new RemoteViews(context.getPackageName(), R.layout.eventview_condensed);
             }
-            System.out.println(width);
-            System.out.println(height);
             int padding = UIUtils.dp(context, 5);
             if (width > 210)
             {
