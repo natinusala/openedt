@@ -20,13 +20,12 @@ package fr.natinusala.openedt.data;
 
 
 
-import android.util.Log;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+
 
 import fr.natinusala.openedt.utils.TimeUtils;
 
@@ -56,7 +55,7 @@ public class Week
         Calendar cal = Calendar.getInstance();
         int today = TimeUtils.getNumberOfDay(cal.get(Calendar.DAY_OF_WEEK));
         // le -1 sur calNow.HOUR_OF_DAY est pour prévenir le décalage.
-        int nowHourMinutes = TimeUtils.convertFormattedTimeToUnits(cal.get(Calendar.HOUR_OF_DAY) - 1, cal.get(Calendar.MINUTE));
+        int nowHourMinutes = TimeUtils.convertFormattedTimeToUnits(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         ArrayList<WrapperEventWeek> nextEvents = new ArrayList<>();
         Iterator<Event> e = events.iterator();
         if(isWeekEnd){
@@ -66,8 +65,13 @@ public class Week
         }else {
             while (e.hasNext() && nextEvents.size() < 3) {
                 Event event = e.next();
-                if ((event.day >= today)&& (event.endTimeUnits >= nowHourMinutes)) {
+                if ((event.day == today) && (event.endTimeUnits >= nowHourMinutes)) {
                     nextEvents.add(new WrapperEventWeek(event, this));
+                }else{
+                        if(event.day > today) {
+                            nextEvents.add(new WrapperEventWeek(event, this));
+                        }
+
                 }
             }
         }

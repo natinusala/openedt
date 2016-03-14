@@ -72,7 +72,7 @@ public class TimeUtils
     }
 
     public static int getNumberOfDay(int numberDayCalendar){
-        return (numberDayCalendar + 8 ) % 7;
+        return (numberDayCalendar + 5 ) % 7;
 
     }
 
