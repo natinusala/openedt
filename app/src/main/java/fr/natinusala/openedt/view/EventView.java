@@ -34,8 +34,6 @@ public class EventView extends LinearLayout
 
     @Bind(R.id.eventview_module)
     TextView module;
-    @Bind(R.id.eventview_title)
-    LinearLayout title;
     @Bind(R.id.eventview_hour)
     TextView heure;
     @Bind(R.id.eventview_rooms)
@@ -46,6 +44,10 @@ public class EventView extends LinearLayout
     TextView date;
 
     public static int HIDE_DATE = 1;
+    public static int NO_CATEGORY = 2;
+    public static int CONDENSED_TEXTS = 4;
+
+    private int flags;
 
     public EventView(Context c, EventViewType type)
     {
@@ -58,42 +60,56 @@ public class EventView extends LinearLayout
         inflate(c, type.layout, this);
         ButterKnife.bind(this);
 
-        if (checkFlag(flags, HIDE_DATE))
+        this.flags = flags | type.flags;
+
+        if (checkFlag(HIDE_DATE))
         {
             date.setVisibility(GONE);
             professeurs.setPadding(date.getPaddingLeft(), date.getPaddingTop(), date.getPaddingRight(), date.getPaddingBottom());
         }
     }
 
-    boolean checkFlag(int flags, int flag)
+    boolean checkFlag(int flag)
     {
         return (flags & flag) == flag;
     }
 
-    public EventView setData(Event event, Week week) {
+    public EventView setData(Event event, Week week)
+    {
         //Données
         Date dayDate = TimeUtils.createDateForDay(event.day, week);
         SimpleDateFormat sdf = TimeUtils.createDateFormat();
 
-        date.setText(String.format("Le %s (semaine %d)", sdf.format(dayDate), week.num));
+        if (checkFlag(CONDENSED_TEXTS))
+        {
+            date.setText(String.format("Le %s", sdf.format(dayDate)));
+            professeurs.setText(event.getPrettyStaff());
+        }
+        else
+        {
+            date.setText(String.format("Le %s (semaine %d)", sdf.format(dayDate), week.num));
+            professeurs.setText(String.format("Avec %s", event.getPrettyStaff()));
+        }
 
         module.setBackgroundColor(Color.parseColor(event.colour));
         salle.setText(String.format("En salle %s", event.getPrettyRoom()));
         heure.setText(String.format("De %s à %s", event.starttime, event.endtime));
-        module.setText(event.createCategoryModule());
-        professeurs.setText(String.format("Avec %s", event.getPrettyStaff()));
+        module.setText(event.createCategoryModule(!checkFlag(NO_CATEGORY)));
 
         return this;
     }
 
     public enum EventViewType
     {
-        REGULAR(R.layout.eventview_regular);
+        REGULAR(R.layout.eventview_regular, 0),
+        CONDENSED(R.layout.eventview_condensed, NO_CATEGORY | CONDENSED_TEXTS);
 
         public int layout;
+        public int flags;
 
-        EventViewType(int layout) {
+        EventViewType(int layout, int flags) {
             this.layout = layout;
+            this.flags = flags;
         }
     }
 }

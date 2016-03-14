@@ -62,8 +62,12 @@ public class Event
         }
     }
 
-
     public String createCategoryModule()
+    {
+        return createCategoryModule(true);
+    }
+
+    public String createCategoryModule(boolean showCategory)
     {
         if (module.isEmpty() && category.isEmpty())
         {
@@ -79,7 +83,7 @@ public class Event
         }
         else
         {
-            return category + " : " + getPrettyStringFromList(module);
+            return ( showCategory ? (category + " : ") : "") + getPrettyStringFromList(module);
         }
     }
 

@@ -43,6 +43,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.support.v7.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -366,7 +367,7 @@ public class MainActivity extends AppCompatActivity
         @Bind(R.id.home_week) TextView week;
         @Bind(R.id.home_date) TextView date;
 
-        @Bind(R.id.home_container) LinearLayout daysContainer;
+        @Bind(R.id.home_container) GridLayout daysContainer;
 
         public static final String BUNDLE_WEEKS = "weeks";
 
@@ -374,7 +375,6 @@ public class MainActivity extends AppCompatActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             ArrayList<Week> weeks = new Gson().fromJson(getArguments().getString(BUNDLE_WEEKS, ""), new TypeToken<ArrayList<Week>>() {}.getType());
-
 
             View view = inflater.inflate(R.layout.activity_main_home_fragment, container, false);
             ButterKnife.bind(this, view);
@@ -391,13 +391,16 @@ public class MainActivity extends AppCompatActivity
             {
                 CardView card = new CardView(getContext());
 
-                EventView eventView = new EventView(getContext(), EventView.EventViewType.REGULAR);
+                EventView eventView = new EventView(getContext(), EventView.EventViewType.CONDENSED);
 
                 eventView.setData(wrap.getEvent(), wrap.getWeek());
                 card.addView(eventView);
 
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.setMargins(UIUtils.dp(getContext(), 20), UIUtils.dp(getContext(), 10), UIUtils.dp(getContext(), 20), UIUtils.dp(getContext(), 10));
+                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                params.setGravity(Gravity.FILL_VERTICAL);
+                int margin = UIUtils.dp(getContext(), 10);
+                params.setMargins(margin, margin, margin, margin);
                 card.setLayoutParams(params);
 
                 daysContainer.addView(card);
