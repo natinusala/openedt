@@ -31,17 +31,11 @@ import fr.natinusala.openedt.utils.TimeUtils;
 
 public class EventView extends LinearLayout
 {
-
-    @Bind(R.id.eventview_module)
-    TextView module;
-    @Bind(R.id.eventview_hour)
-    TextView heure;
-    @Bind(R.id.eventview_rooms)
-    TextView salle;
-    @Bind(R.id.eventview_staff)
-    TextView professeurs;
-    @Bind(R.id.eventview_date)
-    TextView date;
+    @Bind(R.id.eventview_module) TextView module;
+    @Bind(R.id.eventview_hour) TextView heure;
+    @Bind(R.id.eventview_rooms) TextView salle;
+    @Bind(R.id.eventview_staff) TextView professeurs;
+    @Bind(R.id.eventview_date) TextView date;
 
     public static int HIDE_DATE = 1;
     public static int NO_CATEGORY = 2;
