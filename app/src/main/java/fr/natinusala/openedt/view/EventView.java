@@ -16,80 +16,61 @@ package fr.natinusala.openedt.view;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.utils.TimeUtils;
-import fr.natinusala.openedt.utils.UIUtils;
 
 public class EventView extends LinearLayout
 {
-    TextView module;
-    TextView salle;
-    TextView professeurs;
-    TextView date;
-    TextView heure;
 
-    public EventView(Context c)
+    @Bind(R.id.eventview_module)
+    TextView module;
+    @Bind(R.id.eventview_title)
+    LinearLayout title;
+    @Bind(R.id.eventview_hour)
+    TextView heure;
+    @Bind(R.id.eventview_rooms)
+    TextView salle;
+    @Bind(R.id.eventview_staff)
+    TextView professeurs;
+    @Bind(R.id.eventview_date)
+    TextView date;
+
+    public static int HIDE_DATE = 1;
+
+    public EventView(Context c, EventViewType type)
     {
-        this(c, false);
+        this(c, type, 0);
     }
 
-    public EventView(Context c, boolean condensed)
+    public EventView(Context c, EventViewType type, int flags)
     {
         super(c);
+        inflate(c, type.layout, this);
+        ButterKnife.bind(this);
 
-        int padding = UIUtils.dp(c, condensed ? 10 : 16);
-
-        //Layout
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        this.setLayoutParams(params);
-        this.setOrientation(LinearLayout.VERTICAL);
-        this.setBackgroundColor(Color.WHITE);
-
-        module = new TextView(c);
-        module.setPadding(padding, padding/2, UIUtils.dp(c, 25), padding/2);
-        module.setTextSize(28);
-        this.addView(module);
-
-        heure = new TextView(c);
-        heure.setTextSize(16);
-        heure.setPadding(padding, padding, padding, 0);
-        heure.setTypeface(null, Typeface.BOLD);
-        this.addView(heure);
-
-        salle = new TextView(c);
-        salle.setPadding(padding, 0, padding, 0);
-        salle.setTextSize(16);
-        salle.setTypeface(null, Typeface.BOLD);
-        this.addView(salle);
-
-        professeurs = new TextView(c);
-        professeurs.setPadding(padding, padding, padding, 0);
-        this.addView(professeurs);
-
-        date = new TextView(c);
-        date.setPadding(padding, 0, padding, padding);
-
-        if (condensed)
+        if (checkFlag(flags, HIDE_DATE))
         {
-            professeurs.setPadding(padding, 0, padding, padding);
+            date.setVisibility(GONE);
+            professeurs.setPadding(date.getPaddingLeft(), date.getPaddingTop(), date.getPaddingRight(), date.getPaddingBottom());
         }
-        else
-        {
-            this.addView(date);
-        }
-
     }
 
-    public EventView setData(Event event, Week week)
+    boolean checkFlag(int flags, int flag)
     {
+        return (flags & flag) == flag;
+    }
+
+    public EventView setData(Event event, Week week) {
         //Données
         Date dayDate = TimeUtils.createDateForDay(event.day, week);
         SimpleDateFormat sdf = TimeUtils.createDateFormat();
@@ -103,5 +84,16 @@ public class EventView extends LinearLayout
         professeurs.setText(String.format("Avec %s", event.getPrettyStaff()));
 
         return this;
+    }
+
+    public enum EventViewType
+    {
+        REGULAR(R.layout.eventview_regular);
+
+        public int layout;
+
+        EventViewType(int layout) {
+            this.layout = layout;
+        }
     }
 }

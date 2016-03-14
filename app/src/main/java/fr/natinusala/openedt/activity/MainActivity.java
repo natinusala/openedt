@@ -58,7 +58,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -392,7 +391,7 @@ public class MainActivity extends AppCompatActivity
             {
                 CardView card = new CardView(getContext());
 
-                EventView eventView = new EventView(getContext());
+                EventView eventView = new EventView(getContext(), EventView.EventViewType.REGULAR);
 
                 eventView.setData(wrap.getEvent(), wrap.getWeek());
                 card.addView(eventView);
@@ -498,7 +497,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
-                EventView eventView = new EventView(getActivity(), true).setData(events.get(position), currentWeek);
+                EventView eventView = new EventView(getActivity(), EventView.EventViewType.REGULAR, EventView.HIDE_DATE).setData(events.get(position), currentWeek);
                 android.support.v7.widget.CardView card = new android.support.v7.widget.CardView(getContext());
                 card.addView(eventView);
 

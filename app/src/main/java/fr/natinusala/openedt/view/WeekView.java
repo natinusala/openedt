@@ -138,7 +138,7 @@ public class WeekView extends CardView
             });
 
             //Layout
-            EventView eventView = new EventView(context);
+            EventView eventView = new EventView(context, EventView.EventViewType.REGULAR);
             eventView.setData(event, week);
             setView(eventView);
         }
