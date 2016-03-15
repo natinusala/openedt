@@ -80,6 +80,8 @@ public class WidgetProvider extends AppWidgetProvider
         {
             Bundle options = appWidgetManager.getAppWidgetOptions(wId);
 
+            boolean condensed = false;
+
             int width = getCellsForSize(options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
             int height = getCellsForSize(options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT));
 
@@ -92,6 +94,7 @@ public class WidgetProvider extends AppWidgetProvider
             else
             {
                 views = new RemoteViews(context.getPackageName(), R.layout.eventview_condensed);
+                condensed = true;
             }
 
             int padding = UIUtils.dp(context, 5);
@@ -123,7 +126,7 @@ public class WidgetProvider extends AppWidgetProvider
                     views.setInt(R.id.eventview_title, "setBackgroundColor", Color.parseColor(event.colour));
                     views.setTextViewText(R.id.eventview_rooms, String.format("En salle %s", event.getPrettyRoom()));
                     views.setTextViewText(R.id.eventview_hour, String.format("De %s à %s", event.starttime, event.endtime));
-                    views.setTextViewText(R.id.eventview_module, event.createCategoryModule());
+                    views.setTextViewText(R.id.eventview_module, event.createCategoryModule(!condensed));
                     views.setTextViewText(R.id.eventview_staff, event.getPrettyStaff());
                     views.setTextViewText(R.id.eventview_group, group.name + " - prochain cours :");
                 }
