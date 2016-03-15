@@ -70,17 +70,22 @@ public class WidgetProvider extends AppWidgetProvider
             return DataManager.getWeeksForGroup(context, group);
         }
 
+        int getCellsForSize(int size)
+        {
+            return (int)(Math.ceil(size + 30d)/70d);
+        }
+
         @Override
         protected void onPostExecute(ArrayList<Week> weeks)
         {
             Bundle options = appWidgetManager.getAppWidgetOptions(wId);
 
-            int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-            int height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
+            int width = getCellsForSize(options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
+            int height = getCellsForSize(options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT));
 
             RemoteViews views;
 
-            if (width >= 250 && height >= 110)
+            if (width >= 4 && height >= 2)
             {
                 views = new RemoteViews(context.getPackageName(), R.layout.eventview_regular);
             }
@@ -88,8 +93,9 @@ public class WidgetProvider extends AppWidgetProvider
             {
                 views = new RemoteViews(context.getPackageName(), R.layout.eventview_condensed);
             }
+
             int padding = UIUtils.dp(context, 5);
-            if (width > 210)
+            if (height >= 2 && width >= 3)
             {
                 views.setViewVisibility(R.id.eventview_group, View.VISIBLE);
                 views.setViewPadding(R.id.eventview_module, padding, 0, padding, padding);
@@ -105,7 +111,7 @@ public class WidgetProvider extends AppWidgetProvider
             if (weeks != null)
             {
 
-                ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weeks);
+                ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weeks, 1);
                 Event event = wrappers.get(0).getEvent();
                 Week week = wrappers.get(0).getWeek();
                 if (event != null)

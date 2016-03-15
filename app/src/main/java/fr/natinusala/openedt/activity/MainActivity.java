@@ -385,7 +385,7 @@ public class MainActivity extends AppCompatActivity
             date.setText(WordUtils.capitalize(format.format(new Date())));
             week.setText(String.format("Semaine %d", cal.get(Calendar.WEEK_OF_YEAR)));
 
-            ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weeks);
+            ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weeks, 4);
 
             for (WrapperEventWeek wrap : wrappers)
             {

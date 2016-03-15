@@ -37,7 +37,7 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class WeekManager {
 
 
-    public static ArrayList<WrapperEventWeek> getNextEvents(ArrayList<Week> weeks)
+    public static ArrayList<WrapperEventWeek> getNextEvents(ArrayList<Week> weeks, int count)
     {
         Calendar cal = Calendar.getInstance();
         boolean found = false;
@@ -64,16 +64,16 @@ public class WeekManager {
        ArrayList<WrapperEventWeek> currentEventList = null;
         if(w != null) {
             currentEventList = w.getNextEvents(weekend);
-            while (week.hasNext() && currentEventList.size() < 3) {
+            while (week.hasNext() && currentEventList.size() < count) {
                 currentEventList.addAll(week.next().getNextEvents(true));
             }
         }
 
-        return currentEventList;
+        return new ArrayList<>(currentEventList != null ? currentEventList.subList(0, count) : new ArrayList<WrapperEventWeek>());
     }
 
     public static ArrayList<String> getNextEventsForPebble(ArrayList<Week> weekArray){
-        ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weekArray);
+        ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weekArray, 3);
         ArrayList<String> strToReturn = new ArrayList<>();
         for(WrapperEventWeek wrap : wrappers){
             strToReturn.add(wrap.getEvent().toPebbleString());
