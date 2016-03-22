@@ -63,9 +63,9 @@ public class WeekManager {
         }
        ArrayList<WrapperEventWeek> currentEventList = null;
         if(w != null) {
-            currentEventList = w.getNextEvents(weekend);
+            currentEventList = w.getNextEvents(weekend, count);
             while (week.hasNext() && currentEventList.size() < count) {
-                currentEventList.addAll(week.next().getNextEvents(true));
+                currentEventList.addAll(week.next().getNextEvents(true, count));
             }
         }
 

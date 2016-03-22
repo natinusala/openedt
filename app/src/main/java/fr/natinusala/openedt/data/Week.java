@@ -51,7 +51,7 @@ public class Week
     }
 
     //Attention décalage d'au moins une heure dans les times units des modules
-    public ArrayList<WrapperEventWeek> getNextEvents(boolean isWeekEnd){
+    public ArrayList<WrapperEventWeek> getNextEvents(boolean isWeekEnd, int count){
         Calendar cal = Calendar.getInstance();
         int today = TimeUtils.getNumberOfDay(cal.get(Calendar.DAY_OF_WEEK));
         // le -1 sur calNow.HOUR_OF_DAY est pour prévenir le décalage.
@@ -59,11 +59,11 @@ public class Week
         ArrayList<WrapperEventWeek> nextEvents = new ArrayList<>();
         Iterator<Event> e = events.iterator();
         if(isWeekEnd){
-            while(e.hasNext() && nextEvents.size() < 3){
+            while(e.hasNext() && nextEvents.size() < count){
                 nextEvents.add(new WrapperEventWeek(e.next(), this));
             }
         }else {
-            while (e.hasNext() && nextEvents.size() < 3) {
+            while (e.hasNext() && nextEvents.size() < count) {
                 Event event = e.next();
                 if ((event.day == today) && (event.endTimeUnits >= nowHourMinutes)) {
                     nextEvents.add(new WrapperEventWeek(event, this));
