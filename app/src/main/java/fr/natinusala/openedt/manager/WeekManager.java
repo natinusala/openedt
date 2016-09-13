@@ -21,6 +21,8 @@ package fr.natinusala.openedt.manager;
 
 
 
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -69,7 +71,12 @@ public class WeekManager {
             }
         }
 
-        return new ArrayList<>(currentEventList != null ? currentEventList.subList(0, count) : new ArrayList<WrapperEventWeek>());
+        if (currentEventList != null){
+            return new ArrayList<>(currentEventList.subList(0, count));
+        }
+        else {
+            return new ArrayList<>(new ArrayList<WrapperEventWeek>());
+        }
     }
 
     public static ArrayList<String> getNextEventsForPebble(ArrayList<Week> weekArray){

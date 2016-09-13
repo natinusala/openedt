@@ -54,7 +54,7 @@ public class Event
     {
         this.id = id;
         this.timesort = timesort;
-        this.colour = colour;
+        this.colour = "#"+colour;
 
         if (this.colour.equals("#FFFFFF"))
         {
