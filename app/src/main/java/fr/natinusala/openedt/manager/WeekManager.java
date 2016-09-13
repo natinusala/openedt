@@ -79,6 +79,7 @@ public class WeekManager {
         }
     }
 
+
     public static ArrayList<String> getNextEventsForPebble(ArrayList<Week> weekArray){
         ArrayList<WrapperEventWeek> wrappers = WeekManager.getNextEvents(weekArray, 3);
         ArrayList<String> strToReturn = new ArrayList<>();
