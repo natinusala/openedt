@@ -305,6 +305,9 @@ public class MainActivity extends AppCompatActivity
             dialog.show();
             ((TextView) dialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
         }
+        else if (item.getItemId() == R.id.parameters){
+            this.startActivity(new Intent(this, ParametersActivity.class));
+        }
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
