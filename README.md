@@ -1,12 +1,13 @@
 # ![](https://raw.githubusercontent.com/natinusala/openedt/master/app/src/main/res/mipmap-xhdpi/ic_launcher.png) OpenEDT [![Build Status](https://www.bitrise.io/app/433ed4ff3c85e293.svg?token=B828KBlPpH_9OpUzRn9hVg&branch=master)](https://www.bitrise.io/app/433ed4ff3c85e293)
 [![](https://raw.githubusercontent.com/natinusala/openedt/master/hockeyapp.png)](https://rink.hockeyapp.net/apps/bfd3cf6ba4364dc1ad0917bfacf03e17)
 
-Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une application android libre permettant la consultation d'emploi du temps à partir de leur smartphone, qui serait une alternative à une application déjà existante dont le code n'est pas à disposition de ses utilisateurs. 
+Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une application Android libre permettant la consultation d'emploi du temps à partir de leur smartphone, pour constituer une alternative à SmartEDT, qui souffre d'une latence conséquente et dont le code n'est pas à disposition de ses utilisateurs. 
  
 
 ## Liste des fonctionnalités
 
   + Choix du groupe et de la composante
+  + Mise à jour directe depuis l'emploi du temps en ligne, pas de mise en cache ni de serveur intermédiaire
   + Afficher l'emploi du temps sur 3 semaines (la semaine précédente, la semaine courante, la semaine suivante).
   + Voir le détail d'un cours/module (heure, salle, professeur).
   + Possibilité de voir les prochains cours sur sa montre connectée Pebble (ressource bientôt disponible).
