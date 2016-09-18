@@ -1,5 +1,5 @@
 # ![](https://raw.githubusercontent.com/natinusala/openedt/master/app/src/main/res/mipmap-xhdpi/ic_launcher.png) OpenEDT [![Build Status](https://www.bitrise.io/app/433ed4ff3c85e293.svg?token=B828KBlPpH_9OpUzRn9hVg&branch=master)](https://www.bitrise.io/app/433ed4ff3c85e293)
-[Télécharger la dernière béta de l'application, fraîchement sortie de GitHub !](https://launchmycraft.fr/openedt-latest-build)
+[![](https://raw.githubusercontent.com/natinusala/openedt/master/hockeyapp.png)](https://rink.hockeyapp.net/apps/bfd3cf6ba4364dc1ad0917bfacf03e17)
 
 Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une application android libre permettant la consultation d'emploi du temps à partir de leur smartphone, qui serait une alternative à une application déjà existante dont le code n'est pas à disposition de ses utilisateurs. 
  
