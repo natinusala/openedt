@@ -33,6 +33,10 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'com.android.support:gridlayout-v7:23.1.1'
+    compile 'org.mnode.ical4j:ical4j:1.0.5'
+    compile 'backport-util-concurrent:backport-util-concurrent:3.1'
+    compile 'commons-codec:commons-codec:1.8'
+    compile 'commons-lang:commons-lang:2.6'
 }
 
 repositories {

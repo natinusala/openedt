@@ -94,8 +94,5 @@ public class TimeUtils
         return c.getTime();
     }
 
-    /*public static int dayCalendarToDayCelcat(int dayCal){
-        return (dayCal+8)%7;
-    }*/
 
 }
