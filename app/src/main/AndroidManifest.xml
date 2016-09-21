@@ -19,7 +19,16 @@
     package="fr.natinusala.openedt"
     tools:overrideLibrary="com.getpebble.android.kit">
 
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <service android:name="com.example.accounts.GenericAccountService">
+        <intent-filter>
+            <action android:name="android.accounts.AccountAuthenticator" />
+        </intent-filter>
+        <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator" />
+    </service>
 
     <application
         android:allowBackup="true"
@@ -49,6 +58,8 @@
                 <meta-data android:name="android.appwidget.provider"
                     android:resource="@xml/widget_provider_info" />
             </receiver>
+
+
     </application>
 
 </manifest>

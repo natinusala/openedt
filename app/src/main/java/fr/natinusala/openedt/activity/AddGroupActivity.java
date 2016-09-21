@@ -14,14 +14,24 @@
 
 package fr.natinusala.openedt.activity;
 
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -29,8 +39,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -39,6 +52,7 @@ import butterknife.ButterKnife;
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.data.Group;
+import fr.natinusala.openedt.manager.AuthManager;
 import fr.natinusala.openedt.manager.GroupManager;
 
 public class AddGroupActivity extends AppCompatActivity
@@ -172,6 +186,8 @@ public class AddGroupActivity extends AppCompatActivity
         groupTextView.setVisibility(View.INVISIBLE);
     }
 
+
+
     class Task extends AsyncTask<Void, Void, Boolean>
     {
         Component selectedComponent;
@@ -182,6 +198,40 @@ public class AddGroupActivity extends AppCompatActivity
             groupCard.setVisibility(View.INVISIBLE);
             valider.setVisibility(View.INVISIBLE);
             selectedComponent = Component.values()[componentSpinner.getSelectedItemPosition()];
+            if(selectedComponent.needAuth && AuthManager.needAccount(selectedComponent.name, getApplicationContext())){
+
+                final Dialog login = new Dialog(AddGroupActivity.this);
+                login.setContentView(R.layout.login_dialog);
+                login.setTitle("Authentification requise.");
+
+                Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+                Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+
+                final EditText idField = (EditText) login.findViewById(R.id.txtUsername);
+                final EditText pwdField = (EditText) login.findViewById(R.id.txtPassword);
+                btnLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String id = idField.getText().toString();
+                        String pwd = pwdField.getText().toString();
+
+                        AuthManager.addAccount(id, pwd, selectedComponent.name, getApplicationContext());
+                        //if method of auth manager return true
+                        Toast.makeText(getApplicationContext(),
+                                "Connexion OK!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        login.dismiss();
+                    }
+                });
+
+
+                login.show();
+
+            }
             showSpinner();
         }
 
@@ -190,7 +240,7 @@ public class AddGroupActivity extends AppCompatActivity
         {
             try
             {
-                groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent);
+                groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext());
                 return true;
             }
             catch (Exception ex)

@@ -14,6 +14,12 @@
 
 package fr.natinusala.openedt.adapter;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
+import org.apache.commons.codec.binary.Base64;
+
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,10 +37,30 @@ import fr.natinusala.openedt.utils.TimeUtils;
 public class CelcatAdapter implements IDataAdapter
 {
     @Override
-    public ArrayList<Group> getGroupsList(Component c) throws IOException {
+    public ArrayList<Group> getGroupsList(Component c, Context context) throws IOException {
         String url = c.groups_url;
         ArrayList<Group> liste = new ArrayList<>();
-        Document doc = Jsoup.connect(url).get();
+
+        Connection conn = Jsoup.connect(url);
+
+        if(c.needAuth) {
+            AccountManager manager = AccountManager.get(context);
+            Account[] accounts = manager.getAccountsByType("OpenEDT-"+c.name);
+            String id = "";
+            String pwd = "";
+            if(accounts.length > 0){
+                Account account = accounts[0];
+                id = account.name;
+                pwd = manager.getPassword(account);
+            }else{
+
+            }
+            String login = id+":"+pwd;
+
+            String b64login = new String(android.util.Base64.encode(login.getBytes(), android.util.Base64.DEFAULT));
+            conn.header("Authorization", "Basic " + b64login);
+        }
+        Document doc = conn.get();
         for (Element e : doc.select("option[value$=.html]"))
         {
             Group groupe = new Group();
