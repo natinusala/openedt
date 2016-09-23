@@ -45,6 +45,11 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -54,6 +59,7 @@ import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.manager.AuthManager;
 import fr.natinusala.openedt.manager.GroupManager;
+import fr.natinusala.openedt.activity.testAccount;
 
 public class AddGroupActivity extends AppCompatActivity
 {
@@ -128,6 +134,15 @@ public class AddGroupActivity extends AppCompatActivity
                     finish();
                 }
 
+            }
+        });
+
+        final Button testAccount = (Button) findViewById(R.id.buttonTest);
+        final Intent intent = new Intent(this, testAccount.class);
+        testAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(intent);
             }
         });
 
@@ -217,8 +232,12 @@ public class AddGroupActivity extends AppCompatActivity
 
                         AuthManager.addAccount(id, pwd, selectedComponent.name, getApplicationContext());
                         //if method of auth manager return true
+
+
                         Toast.makeText(getApplicationContext(),
                                 "Connexion OK!", Toast.LENGTH_SHORT).show();
+
+                        login.dismiss();
                     }
                 });
                 btnCancel.setOnClickListener(new View.OnClickListener() {

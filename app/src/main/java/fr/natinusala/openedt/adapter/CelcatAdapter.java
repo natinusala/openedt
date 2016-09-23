@@ -32,34 +32,33 @@ import fr.natinusala.openedt.data.DataSourceType;
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.manager.AuthManager;
 import fr.natinusala.openedt.utils.TimeUtils;
 
 public class CelcatAdapter implements IDataAdapter
 {
     @Override
     public ArrayList<Group> getGroupsList(Component c, Context context) throws IOException {
-        String url = c.groups_url;
         ArrayList<Group> liste = new ArrayList<>();
 
+
+        String url = c.groups_url;
         Connection conn = Jsoup.connect(url);
+
 
         if(c.needAuth) {
             AccountManager manager = AccountManager.get(context);
-            Account[] accounts = manager.getAccountsByType("OpenEDT-"+c.name);
-            String id = "";
-            String pwd = "";
-            if(accounts.length > 0){
-                Account account = accounts[0];
-                id = account.name;
-                pwd = manager.getPassword(account);
-            }else{
+            Account account = AuthManager.getAccount(c.name, context);
+            String id =  account.name;
+            String pwd = manager.getPassword(account);
 
-            }
             String login = id+":"+pwd;
 
             String b64login = new String(android.util.Base64.encode(login.getBytes(), android.util.Base64.DEFAULT));
             conn.header("Authorization", "Basic " + b64login);
+
         }
+
         Document doc = conn.get();
         for (Element e : doc.select("option[value$=.html]"))
         {
