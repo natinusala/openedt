@@ -125,13 +125,6 @@
         android:layout_height="wrap_content"
         android:text="Valider"
         android:visibility="invisible" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test Account"
-        android:id="@+id/buttonTest"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+
 
 </LinearLayout>

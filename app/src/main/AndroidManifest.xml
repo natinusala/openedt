@@ -67,10 +67,6 @@
                 android:resource="@xml/widget_provider_info" />
         </receiver>
 
-        <activity
-            android:name=".activity.testAccount"
-            android:label="@string/title_activity_test_account"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
