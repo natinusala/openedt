@@ -207,7 +207,7 @@ public class AddGroupActivity extends AppCompatActivity
                         String id = idField.getText().toString();
                         String pwd = pwdField.getText().toString();
 
-                        AuthManager.addAccount(id, pwd, selectedComponent.name, getApplicationContext());
+                        AuthManager.addAccount(id, pwd, selectedComponent, getApplicationContext());
                         //if method of auth manager return true
 
 

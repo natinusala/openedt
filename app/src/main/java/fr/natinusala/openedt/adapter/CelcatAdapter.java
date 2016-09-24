@@ -73,11 +73,28 @@ public class CelcatAdapter implements IDataAdapter
     }
 
     @Override
-    public ArrayList<Week> getWeeks(Group g) throws IOException
+    public ArrayList<Week> getWeeks(Group g, Context context) throws IOException
     {
         ArrayList<Week> semaines = new ArrayList<>();
 
-        Document doc = Jsoup.connect(g.dataSource).get();
+        String url = g.dataSource;
+        Connection conn = Jsoup.connect(url);
+
+        if(g.component.needAuth) {
+            AccountManager manager = AccountManager.get(context);
+            Account account = AuthManager.getAccount(g.component.name, context);
+            String id =  account.name;
+            String pwd = manager.getPassword(account);
+
+            String login = id+":"+pwd;
+
+            String b64login = new String(android.util.Base64.encode(login.getBytes(), android.util.Base64.DEFAULT));
+            conn.header("Authorization", "Basic " + b64login);
+
+        }
+
+        Document doc = conn.get();
+
 
         //Semaines
         Week actuelle;

@@ -34,7 +34,7 @@ public enum Component
     PSYCHOLOGIE("Psychologie", "https://edt.univ-nantes.fr/psycho/gindex.html", DataSourceType.CELCAT),
     LETTRES("Lettres et langages", "https://edt.univ-nantes.fr/lettreslangages/gindex.html", DataSourceType.CELCAT),
     IUT_SAINT_NAZAIRE("IUT Saint Nazaire", "https://edt.univ-nantes.fr/iut_st_naz/gindex.html", DataSourceType.CELCAT),
-    UFR("Sciences", "https://edt.univ-nantes.fr/sciences/gindex.html", DataSourceType.CELCAT, true),
+    UFR("UFR", "https://edt.univ-nantes.fr/sciences/gindex.html", DataSourceType.CELCAT, true),
     POLYTECH("Polytech", "https://edt.univ-nantes.fr/chantrerie-gavy/gindex.html", DataSourceType.CELCAT, true);
 
     Component(String name, String groups_url, DataSourceType sourceType)
