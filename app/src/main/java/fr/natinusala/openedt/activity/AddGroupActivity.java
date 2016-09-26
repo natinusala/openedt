@@ -24,6 +24,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -87,7 +89,58 @@ public class AddGroupActivity extends AppCompatActivity
         componentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                new Task().execute();
+
+                Component selectedComponent = Component.values()[componentSpinner.getSelectedItemPosition()];
+                if (selectedComponent.needAuth && AuthManager.needAccount(selectedComponent.name, getApplicationContext()) ){
+                    final Dialog login = new Dialog(AddGroupActivity.this);
+                    login.setContentView(R.layout.login_dialog);
+                    login.setTitle("Authentification requise.");
+
+                    Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+                    Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+
+                    final CheckBox chkbox = (CheckBox) login.findViewById(R.id.pwd_checkbox);
+
+                    chkbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EditText txt = (EditText) login.findViewById(R.id.txtPassword);
+                            if(chkbox.isChecked()){
+                                txt.setTransformationMethod(null);
+                            }else{
+                                txt.setTransformationMethod(new PasswordTransformationMethod());
+                            }
+                        }
+                    });
+
+                    final EditText idField = (EditText) login.findViewById(R.id.txtUsername);
+                    final EditText pwdField = (EditText) login.findViewById(R.id.txtPassword);
+                    btnLogin.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            credential_id.set(idField.getText().toString());
+                            credential_pwd.set(pwdField.getText().toString());
+
+                            //AuthManager.addAccount(id, pwd, selectedComponent, getApplicationContext());
+                            //if method of auth manager return true
+
+                            login.dismiss();
+                            new Task().execute();
+
+                        }
+                    });
+                    btnCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            login.dismiss();
+                        }
+                    });
+
+
+                    login.show();
+                }else {
+                    new Task().execute();
+                }
             }
 
             @Override
@@ -198,40 +251,6 @@ public class AddGroupActivity extends AppCompatActivity
             groupCard.setVisibility(View.INVISIBLE);
             valider.setVisibility(View.INVISIBLE);
             selectedComponent = Component.values()[componentSpinner.getSelectedItemPosition()];
-            if(selectedComponent.needAuth && AuthManager.needAccount(selectedComponent.name, getApplicationContext())){
-                final Dialog login = new Dialog(AddGroupActivity.this);
-                login.setContentView(R.layout.login_dialog);
-                login.setTitle("Authentification requise.");
-
-                Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
-                Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
-
-                final EditText idField = (EditText) login.findViewById(R.id.txtUsername);
-                final EditText pwdField = (EditText) login.findViewById(R.id.txtPassword);
-                btnLogin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        credential_id.set(idField.getText().toString());
-                        credential_pwd.set(pwdField.getText().toString());
-
-                        //AuthManager.addAccount(id, pwd, selectedComponent, getApplicationContext());
-                        //if method of auth manager return true
-
-                        login.dismiss();
-
-                    }
-                });
-                btnCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        login.dismiss();
-                    }
-                });
-
-
-                login.show();
-
-            }
             showSpinner();
         }
 
@@ -244,7 +263,6 @@ public class AddGroupActivity extends AppCompatActivity
                     groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext());
                }else{
 
-                   Log.v("creds", (String) credential_id.get()+" "+ (String) credential_pwd.get());
                    groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext(), (String) credential_id.get(), (String) credential_pwd.get());
 
                }
