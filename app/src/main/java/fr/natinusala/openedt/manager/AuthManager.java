@@ -37,15 +37,10 @@ public class AuthManager extends AccountAuthenticatorActivity {
     }
 
     public static void addAccount(String id, String pwd, Component component, Context context){
-        boolean isChecked = checkLogin(component, id, pwd);
-        if(isChecked) {
-            AccountManager accountManager = AccountManager.get(context);
-            Account account = new Account(id, "com.openedt.auth");
-            accountManager.setUserData(account, "component", component.name);
-            accountManager.addAccountExplicitly(account, pwd, null);
-            Log.v("done", "done");
-        }
-        Log.v("done", "pas done");
+        AccountManager accountManager = AccountManager.get(context);
+        Account account = new Account(id, "com.openedt.auth");
+        accountManager.setUserData(account, "component", component.name);
+        accountManager.addAccountExplicitly(account, pwd, null);
     }
 
     public static Account getAccount(String component, Context context){

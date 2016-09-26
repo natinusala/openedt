@@ -26,5 +26,6 @@ import fr.natinusala.openedt.data.Week;
 public interface IDataAdapter
 {
     ArrayList<Group> getGroupsList(Component c, Context context) throws IOException;
+    ArrayList<Group> getGroupsList(Component c, Context context, String id, String pwd) throws IOException;
     ArrayList<Week> getWeeks(Group g, Context context) throws IOException;
 }

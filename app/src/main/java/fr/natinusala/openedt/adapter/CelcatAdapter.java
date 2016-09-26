@@ -44,19 +44,35 @@ public class CelcatAdapter implements IDataAdapter
 
         String url = c.groups_url;
         Connection conn = Jsoup.connect(url);
+        Document doc = conn.get();
+        for (Element e : doc.select("option[value$=.html]"))
+        {
+            Group groupe = new Group();
+            groupe.name = e.text();
+            groupe.dataSourceType = DataSourceType.CELCAT;
+            groupe.dataSource = url.replaceAll("gindex.html", e.attr("value").replaceAll(".html", ".xml"));
+            groupe.component = c;
+            liste.add(groupe);
+        }
+        return liste;
+    }
+
+    @Override
+    public ArrayList<Group> getGroupsList(Component c, Context context, String id, String pwd) throws IOException {
+        ArrayList<Group> liste = new ArrayList<>();
 
 
-        if(c.needAuth) {
-            AccountManager manager = AccountManager.get(context);
-            Account account = AuthManager.getAccount(c.name, context);
-            String id =  account.name;
-            String pwd = manager.getPassword(account);
+        String url = c.groups_url;
+        Connection conn = Jsoup.connect(url);
+        String login = id+":"+pwd;
+        String b64login = new String(android.util.Base64.encode(login.getBytes(), android.util.Base64.DEFAULT));
+        conn.header("Authorization", "Basic " + b64login);
 
-            String login = id+":"+pwd;
-
-            String b64login = new String(android.util.Base64.encode(login.getBytes(), android.util.Base64.DEFAULT));
-            conn.header("Authorization", "Basic " + b64login);
-
+        Connection.Response resp = conn.execute();
+        if(resp.statusCode() == 200){
+            if(AuthManager.needAccount(c.name, context)) {
+                AuthManager.addAccount(id, pwd, c, context);
+            }
         }
 
         Document doc = conn.get();

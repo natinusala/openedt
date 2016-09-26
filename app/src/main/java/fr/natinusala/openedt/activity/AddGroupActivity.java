@@ -24,6 +24,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicReference;
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.data.Group;
@@ -60,6 +62,11 @@ public class AddGroupActivity extends AppCompatActivity
     ArrayList<Group> groups;
 
     ArrayList<Group> addedGroups;
+
+
+
+    final AtomicReference credential_id = new AtomicReference();
+    final AtomicReference credential_pwd = new AtomicReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +191,7 @@ public class AddGroupActivity extends AppCompatActivity
     {
         Component selectedComponent;
 
+
         @Override
         protected void onPreExecute()
         {
@@ -191,7 +199,6 @@ public class AddGroupActivity extends AppCompatActivity
             valider.setVisibility(View.INVISIBLE);
             selectedComponent = Component.values()[componentSpinner.getSelectedItemPosition()];
             if(selectedComponent.needAuth && AuthManager.needAccount(selectedComponent.name, getApplicationContext())){
-
                 final Dialog login = new Dialog(AddGroupActivity.this);
                 login.setContentView(R.layout.login_dialog);
                 login.setTitle("Authentification requise.");
@@ -204,17 +211,14 @@ public class AddGroupActivity extends AppCompatActivity
                 btnLogin.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String id = idField.getText().toString();
-                        String pwd = pwdField.getText().toString();
+                        credential_id.set(idField.getText().toString());
+                        credential_pwd.set(pwdField.getText().toString());
 
-                        AuthManager.addAccount(id, pwd, selectedComponent, getApplicationContext());
+                        //AuthManager.addAccount(id, pwd, selectedComponent, getApplicationContext());
                         //if method of auth manager return true
 
-
-                        Toast.makeText(getApplicationContext(),
-                                "Connexion OK!", Toast.LENGTH_SHORT).show();
-
                         login.dismiss();
+
                     }
                 });
                 btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -236,7 +240,14 @@ public class AddGroupActivity extends AppCompatActivity
         {
             try
             {
-                groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext());
+               if(!selectedComponent.needAuth){
+                    groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext());
+               }else{
+
+                   Log.v("creds", (String) credential_id.get()+" "+ (String) credential_pwd.get());
+                   groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext(), (String) credential_id.get(), (String) credential_pwd.get());
+
+               }
                 return true;
             }
             catch (Exception ex)
