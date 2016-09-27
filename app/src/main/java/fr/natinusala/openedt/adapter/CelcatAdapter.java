@@ -14,6 +14,12 @@
 
 package fr.natinusala.openedt.adapter;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
+import org.apache.commons.codec.binary.Base64;
+
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,15 +32,19 @@ import fr.natinusala.openedt.data.DataSourceType;
 import fr.natinusala.openedt.data.Event;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
+import fr.natinusala.openedt.manager.AuthManager;
 import fr.natinusala.openedt.utils.TimeUtils;
 
 public class CelcatAdapter implements IDataAdapter
 {
     @Override
-    public ArrayList<Group> getGroupsList(Component c) throws IOException {
-        String url = c.groups_url;
+    public ArrayList<Group> getGroupsList(Component c, Context context) throws IOException {
         ArrayList<Group> liste = new ArrayList<>();
-        Document doc = Jsoup.connect(url).get();
+
+
+        String url = c.groups_url;
+        Connection conn = Jsoup.connect(url);
+        Document doc = conn.get();
         for (Element e : doc.select("option[value$=.html]"))
         {
             Group groupe = new Group();
@@ -48,11 +58,59 @@ public class CelcatAdapter implements IDataAdapter
     }
 
     @Override
-    public ArrayList<Week> getWeeks(Group g) throws IOException
+    public ArrayList<Group> getGroupsList(Component c, Context context, String id, String pwd) throws IOException {
+        ArrayList<Group> liste = new ArrayList<>();
+
+
+        String url = c.groups_url;
+        Connection conn = Jsoup.connect(url);
+        String login = id+":"+pwd;
+        String b64login = new String(android.util.Base64.encode(login.getBytes(), android.util.Base64.DEFAULT));
+        conn.header("Authorization", "Basic " + b64login);
+
+        Connection.Response resp = conn.execute();
+        if(resp.statusCode() == 200){
+            if(AuthManager.needAccount(c.name, context)) {
+                AuthManager.addAccount(id, pwd, c, context);
+            }
+        }
+
+        Document doc = conn.get();
+        for (Element e : doc.select("option[value$=.html]"))
+        {
+            Group groupe = new Group();
+            groupe.name = e.text();
+            groupe.dataSourceType = DataSourceType.CELCAT;
+            groupe.dataSource = url.replaceAll("gindex.html", e.attr("value").replaceAll(".html", ".xml"));
+            groupe.component = c;
+            liste.add(groupe);
+        }
+        return liste;
+    }
+
+    @Override
+    public ArrayList<Week> getWeeks(Group g, Context context) throws IOException
     {
         ArrayList<Week> semaines = new ArrayList<>();
 
-        Document doc = Jsoup.connect(g.dataSource).get();
+        String url = g.dataSource;
+        Connection conn = Jsoup.connect(url);
+
+        if(g.component.needAuth) {
+            AccountManager manager = AccountManager.get(context);
+            Account account = AuthManager.getAccount(g.component.name, context);
+            String id =  account.name;
+            String pwd = manager.getPassword(account);
+
+            String login = id+":"+pwd;
+
+            String b64login = new String(android.util.Base64.encode(login.getBytes(), android.util.Base64.DEFAULT));
+            conn.header("Authorization", "Basic " + b64login);
+
+        }
+
+        Document doc = conn.get();
+
 
         //Semaines
         Week actuelle;

@@ -14,31 +14,39 @@
 
 package fr.natinusala.openedt.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicReference;
 import fr.natinusala.openedt.R;
 import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.data.Group;
+import fr.natinusala.openedt.manager.AuthManager;
 import fr.natinusala.openedt.manager.GroupManager;
 
 public class AddGroupActivity extends AppCompatActivity
@@ -56,6 +64,11 @@ public class AddGroupActivity extends AppCompatActivity
     ArrayList<Group> groups;
 
     ArrayList<Group> addedGroups;
+
+
+
+    final AtomicReference credential_id = new AtomicReference();
+    final AtomicReference credential_pwd = new AtomicReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +89,58 @@ public class AddGroupActivity extends AppCompatActivity
         componentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                new Task().execute();
+
+                Component selectedComponent = Component.values()[componentSpinner.getSelectedItemPosition()];
+                if (selectedComponent.needAuth && AuthManager.needAccount(selectedComponent.name, getApplicationContext()) ){
+                    final Dialog login = new Dialog(AddGroupActivity.this);
+                    login.setContentView(R.layout.login_dialog);
+                    login.setTitle("Authentification requise.");
+
+                    Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+                    Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+
+                    final CheckBox chkbox = (CheckBox) login.findViewById(R.id.pwd_checkbox);
+
+                    chkbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EditText txt = (EditText) login.findViewById(R.id.txtPassword);
+                            if(chkbox.isChecked()){
+                                txt.setTransformationMethod(null);
+                            }else{
+                                txt.setTransformationMethod(new PasswordTransformationMethod());
+                            }
+                        }
+                    });
+
+                    final EditText idField = (EditText) login.findViewById(R.id.txtUsername);
+                    final EditText pwdField = (EditText) login.findViewById(R.id.txtPassword);
+                    btnLogin.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            credential_id.set(idField.getText().toString());
+                            credential_pwd.set(pwdField.getText().toString());
+
+                            //AuthManager.addAccount(id, pwd, selectedComponent, getApplicationContext());
+                            //if method of auth manager return true
+
+                            login.dismiss();
+                            new Task().execute();
+
+                        }
+                    });
+                    btnCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            login.dismiss();
+                        }
+                    });
+
+
+                    login.show();
+                }else {
+                    new Task().execute();
+                }
             }
 
             @Override
@@ -116,6 +180,8 @@ public class AddGroupActivity extends AppCompatActivity
 
             }
         });
+
+
 
         groupTextViewAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
         groupTextView.setAdapter(groupTextViewAdapter);
@@ -172,9 +238,12 @@ public class AddGroupActivity extends AppCompatActivity
         groupTextView.setVisibility(View.INVISIBLE);
     }
 
+
+
     class Task extends AsyncTask<Void, Void, Boolean>
     {
         Component selectedComponent;
+
 
         @Override
         protected void onPreExecute()
@@ -190,7 +259,13 @@ public class AddGroupActivity extends AppCompatActivity
         {
             try
             {
-                groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent);
+               if(!selectedComponent.needAuth){
+                    groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext());
+               }else{
+
+                   groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext(), (String) credential_id.get(), (String) credential_pwd.get());
+
+               }
                 return true;
             }
             catch (Exception ex)

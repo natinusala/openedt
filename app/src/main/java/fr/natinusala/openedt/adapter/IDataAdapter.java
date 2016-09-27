@@ -14,6 +14,8 @@
 
 package fr.natinusala.openedt.adapter;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -23,6 +25,8 @@ import fr.natinusala.openedt.data.Week;
 
 public interface IDataAdapter
 {
-    ArrayList<Group> getGroupsList(Component c) throws IOException;
-    ArrayList<Week> getWeeks(Group g) throws IOException;
+    ArrayList<Group> getGroupsList(Component c, Context context) throws IOException;
+    ArrayList<Group> getGroupsList(Component c, Context context, String id, String pwd) throws IOException;
+    ArrayList<Week> getWeeks(Group g, Context context) throws IOException;
+
 }

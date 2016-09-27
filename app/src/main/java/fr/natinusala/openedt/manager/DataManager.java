@@ -44,7 +44,7 @@ public class DataManager
         try
         {
             //On télécharge la liste
-            ArrayList<Week> weeks = g.dataSourceType.adapter.getWeeks(g);
+            ArrayList<Week> weeks = g.dataSourceType.adapter.getWeeks(g, c);
 
             SharedPreferences.Editor edit = pref.edit();
 

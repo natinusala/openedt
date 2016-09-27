@@ -109,6 +109,8 @@
                     android:layout_marginTop="15dp"
                     android:visibility="invisible"
                     android:id="@+id/groupTextView"/>
+
+
             </RelativeLayout>
 
 
@@ -123,5 +125,6 @@
         android:layout_height="wrap_content"
         android:text="Valider"
         android:visibility="invisible" />
+
 
 </LinearLayout>
