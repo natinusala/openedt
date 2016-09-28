@@ -25,12 +25,16 @@ Deux étudiants de l'IUT de Nantes ont décidé de commencer à développer une 
     - STAPS
     - ESPE Le Mans
     - ESPE Nantes
+    - ESPE Angers
     - Langues - CIL
     - Irffle
     - Histoire
     - IGARUN
     - Psychologie
     - Lettres et langages
+    - UFR Sciences et Techniques
+    - Chantrerie, Gavy
+    - Ecole Centrale de Nantes
 
 Si vous voulez ajouter votre université ou composante, veuillez vous référer à la section <b>Contribuer au projet</b>.
 
