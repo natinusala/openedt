@@ -52,7 +52,7 @@ public class CelcatAdapter implements IDataAdapter
             Group groupe = new Group();
             groupe.name = e.text();
             groupe.dataSourceType = DataSourceType.CELCAT;
-            groupe.dataSource = url.replaceAll("gindex.html", e.attr("value").replaceAll(".html", ".xml"));
+            groupe.dataSource = getRefactoredUrl(url)+(e.attr("value").replaceAll(".html", ".xml"));
             groupe.component = c;
             liste.add(groupe);
         }
@@ -83,7 +83,8 @@ public class CelcatAdapter implements IDataAdapter
             Group groupe = new Group();
             groupe.name = e.text();
             groupe.dataSourceType = DataSourceType.CELCAT;
-            groupe.dataSource = url.replaceAll("gindex.html", e.attr("value").replaceAll(".html", ".xml"));
+            groupe.dataSource = getRefactoredUrl(url)+(e.attr("value").replaceAll(".html", ".xml"));
+
             groupe.component = c;
             liste.add(groupe);
         }
@@ -197,5 +198,14 @@ public class CelcatAdapter implements IDataAdapter
         }
 
         return semaines;
+    }
+
+    public String getRefactoredUrl(String url){
+        String[] urlArray = url.split("/");
+        String newUrl = "";
+        for(int i = 0; i< urlArray.length -1; i++){
+            newUrl = newUrl + urlArray[i] + "/";
+        }
+        return newUrl;
     }
 }

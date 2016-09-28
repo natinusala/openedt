@@ -36,7 +36,8 @@ public enum Component
     LETTRES("Lettres et langages", "https://edt.univ-nantes.fr/lettreslangages/gindex.html", DataSourceType.CELCAT),
     IUT_SAINT_NAZAIRE("IUT Saint Nazaire", "https://edt.univ-nantes.fr/iut_st_naz/gindex.html", DataSourceType.CELCAT),
     UFR("UFR Sciences et Techniques", "https://edt.univ-nantes.fr/sciences/gindex.html", DataSourceType.CELCAT, true),
-    CHANTRERIE_GAVY("Chantrerie et Gavy", "https://edt.univ-nantes.fr/chantrerie-gavy/gindex.html", DataSourceType.CELCAT, true);
+    CHANTRERIE_GAVY("Chantrerie et Gavy", "https://edt.univ-nantes.fr/chantrerie-gavy/gindex.html", DataSourceType.CELCAT, true),
+    CENTRALE_NANTES("Ecole Centrale Nantes", "http://website.ec-nantes.fr/sites/edtemps/pindex.html", DataSourceType.CELCAT);
 
     Component(String name, String groups_url, DataSourceType sourceType)
     {
