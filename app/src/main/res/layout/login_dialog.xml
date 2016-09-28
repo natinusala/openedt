@@ -5,6 +5,16 @@
     android:background="#fff" android:layout_width="300dp"
     android:paddingTop="10dp"
     android:id="@+id/loginLayout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Authentification requise"
+        android:textColor="@color/colorAccent"
+        android:id="@+id/textView3"
+        android:layout_gravity="center_horizontal" />
+
     <EditText android:layout_height="wrap_content" android:id="@+id/txtUsername"
         android:layout_width="match_parent"
         android:hint="identifiant">
@@ -18,7 +28,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Psswd visible"
+        android:text="Afficher le mot de passe"
         android:id="@+id/pwd_checkbox"
         android:layout_gravity="right" />
 

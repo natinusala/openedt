@@ -14,6 +14,8 @@
 
 package fr.natinusala.openedt.activity;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -93,8 +95,10 @@ public class AddGroupActivity extends AppCompatActivity
                 Component selectedComponent = Component.values()[componentSpinner.getSelectedItemPosition()];
                 if (selectedComponent.needAuth && AuthManager.needAccount(selectedComponent.name, getApplicationContext()) ){
                     final Dialog login = new Dialog(AddGroupActivity.this);
-                    login.setContentView(R.layout.login_dialog);
                     login.setTitle("Authentification requise.");
+                    login.setContentView(R.layout.login_dialog);
+
+
 
                     Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
                     Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
@@ -257,14 +261,20 @@ public class AddGroupActivity extends AppCompatActivity
         @Override
         protected Boolean doInBackground(Void... params)
         {
-            try
-            {
+            try{
+
                if(!selectedComponent.needAuth){
                     groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext());
                }else{
-
-                   groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext(), (String) credential_id.get(), (String) credential_pwd.get());
-
+                   if(AuthManager.needAccount(selectedComponent.name, getApplicationContext())){
+                       groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext(), (String) credential_id.get(), (String) credential_pwd.get());
+                   }else{
+                       AccountManager manager = AccountManager.get(getApplicationContext());
+                       Account account = AuthManager.getAccount(selectedComponent.name, getApplicationContext());
+                       String id = account.name;
+                       String pwd = manager.getPassword(account);
+                       groups = selectedComponent.sourceType.adapter.getGroupsList(selectedComponent, getApplicationContext(), id, pwd);
+                   }
                }
                 return true;
             }

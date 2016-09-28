@@ -17,6 +17,8 @@ package fr.natinusala.openedt.adapter;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.util.Log;
+
 import org.apache.commons.codec.binary.Base64;
 
 import org.jsoup.Connection;
@@ -60,7 +62,7 @@ public class CelcatAdapter implements IDataAdapter
     @Override
     public ArrayList<Group> getGroupsList(Component c, Context context, String id, String pwd) throws IOException {
         ArrayList<Group> liste = new ArrayList<>();
-
+        String nameComponent = String.copyValueOf(c.name.toCharArray());
 
         String url = c.groups_url;
         Connection conn = Jsoup.connect(url);
@@ -70,8 +72,8 @@ public class CelcatAdapter implements IDataAdapter
 
         Connection.Response resp = conn.execute();
         if(resp.statusCode() == 200){
-            if(AuthManager.needAccount(c.name, context)) {
-                AuthManager.addAccount(id, pwd, c, context);
+            if(AuthManager.needAccount(nameComponent, context)) {
+                AuthManager.addAccount(id, pwd, nameComponent, context);
             }
         }
 

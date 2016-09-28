@@ -27,6 +27,7 @@ public enum Component
     STAPS("STAPS", "https://edt.univ-nantes.fr/staps/gindex.html", DataSourceType.CELCAT),
     ESPE_LEMANS("ESPE Le Mans", "https://edt.univ-nantes.fr/iufm-mans/gindex.html", DataSourceType.CELCAT),
     ESPE_NANTES("ESPE Nantes", "https://edt.univ-nantes.fr/iufm-nantes/gindex.html", DataSourceType.CELCAT),
+    ESPE_ANGERS("ESPE Angers", "https://edt.univ-nantes.fr/espe-angers/", DataSourceType.CELCAT, true),
     LANGUES("Langues - CIL", "https://edt.univ-nantes.fr/langues/gindex.html", DataSourceType.CELCAT),
     IRFFLE("Irffle", "https://edt.univ-nantes.fr/irffle/gindex.html", DataSourceType.CELCAT),
     HISTOIRE("Histoire", "https://edt.univ-nantes.fr/histoire/gindex.html", DataSourceType.CELCAT),
@@ -34,8 +35,8 @@ public enum Component
     PSYCHOLOGIE("Psychologie", "https://edt.univ-nantes.fr/psycho/gindex.html", DataSourceType.CELCAT),
     LETTRES("Lettres et langages", "https://edt.univ-nantes.fr/lettreslangages/gindex.html", DataSourceType.CELCAT),
     IUT_SAINT_NAZAIRE("IUT Saint Nazaire", "https://edt.univ-nantes.fr/iut_st_naz/gindex.html", DataSourceType.CELCAT),
-    UFR("UFR", "https://edt.univ-nantes.fr/sciences/gindex.html", DataSourceType.CELCAT, true),
-    POLYTECH("Polytech", "https://edt.univ-nantes.fr/chantrerie-gavy/gindex.html", DataSourceType.CELCAT, true);
+    UFR("UFR Sciences et Techniques", "https://edt.univ-nantes.fr/sciences/gindex.html", DataSourceType.CELCAT, true),
+    CHANTRERIE_GAVY("Chantrerie et Gavy", "https://edt.univ-nantes.fr/chantrerie-gavy/gindex.html", DataSourceType.CELCAT, true);
 
     Component(String name, String groups_url, DataSourceType sourceType)
     {
