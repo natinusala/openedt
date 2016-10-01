@@ -37,7 +37,7 @@ import fr.natinusala.openedt.data.Week;
 import fr.natinusala.openedt.manager.AuthManager;
 import fr.natinusala.openedt.utils.TimeUtils;
 
-public class CelcatAdapter implements DataAdapter
+public class CelcatAdapter implements IDataAdapter
 {
     @Override
     public ArrayList<Group> getGroupsList(Component c, Context context) throws IOException {
