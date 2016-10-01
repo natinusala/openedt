@@ -15,16 +15,16 @@
 package fr.natinusala.openedt.data;
 
 import fr.natinusala.openedt.adapter.CelcatAdapter;
-import fr.natinusala.openedt.adapter.IDataAdapter;
+import fr.natinusala.openedt.adapter.DataAdapter;
 
 public enum DataSourceType
 {
     CELCAT(new CelcatAdapter());
 
-    DataSourceType(IDataAdapter adapter)
+    DataSourceType(DataAdapter adapter)
     {
         this.adapter = adapter;
     }
 
-    public IDataAdapter adapter;
+    public DataAdapter adapter;
 }
