@@ -23,7 +23,7 @@ import fr.natinusala.openedt.data.Component;
 import fr.natinusala.openedt.data.Group;
 import fr.natinusala.openedt.data.Week;
 
-public interface IDataAdapter
+public interface DataAdapter
 {
     ArrayList<Group> getGroupsList(Component c, Context context) throws IOException;
     ArrayList<Group> getGroupsList(Component c, Context context, String id, String pwd) throws IOException;
